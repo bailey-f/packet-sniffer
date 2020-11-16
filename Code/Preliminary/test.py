@@ -48,9 +48,10 @@ class Packet:
         return self.vers                                                                # (struct denies explicit bit manipulation so we work in bytes THEN manipulate with bits.)
 
     def getLen(self):
-        len1 = (struct.unpack('! B', self.raw_data[2:3])[0]) << 4 #bitwise SHIFT left 4 as the length takes up two bytes, we want to be adding the 4 bits in the right places (xxx0000)
-        len2 = (struct.unpack('! B', self.raw_data[3:4])[0]) 
-        self.len = int(len1)+int(len2) #adding the integer value of (aaaabbbb)
+        self.len = int((struct.unpack('! B', self.raw_data[2:3])[0]) << 4) +    #bitwise SHIFT left 4 as the length takes up two bytes, we want to be adding the 4 bits in the right places (xxx0000)
+                 int((struct.unpack('! B', self.raw_data[3:4])[0]) ) 
+        #len2 = (struct.unpack('! B', self.raw_data[3:4])[0]) deprecated
+        #self.len = int(len1)+int(len2) #adding the integer value of (aaaabbbb) deprecated
         return self.len
 
 main()
