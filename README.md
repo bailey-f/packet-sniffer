@@ -13,7 +13,7 @@ Refer to https://docs.google.com/document/d/1LXiltV4p79YEyUGhFiv5oBQvBsQUn4C2TEc
  | |         | +------+-------+  |    enhanced packet    |  |
  | | capture |        |          |       analyser        |  |
  | |         | +------+-------+  |                       |  |
- | |         +-+ core / main  +--+                       |  |
+ | |         +-+ [core / main]+--+                       |  |
  | +----+----+ +--------------|  +-----------------------+  |
  |     |                                                    |
  +----------------------------------------------------------+
@@ -24,3 +24,5 @@ Refer to https://docs.google.com/document/d/1LXiltV4p79YEyUGhFiv5oBQvBsQUn4C2TEc
   |                          |
   +--------------------------+
 ```
+
+[core / main]: (https://github.com/bailey-f/packet-sniffer/tree/homedev/Code/networksniffer/Core)
