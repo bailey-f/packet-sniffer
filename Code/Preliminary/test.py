@@ -12,7 +12,9 @@ def main():
         raw_data, addr = conn.recvfrom(65535)
         packet = PacketIP(raw_data)
         if(packet.getProtocol()=="TCP"):
-            packet_tcp = PacketTCP(raw_data, packet.getHeaderLen())
+            packet_spec = PacketTCP(raw_data, packet.getHeaderLen())
+        elif(packet.getProtocol()=="UDP"):
+            packet_spec= PacketUDP(raw_data, packet.getHeaderLen())
         if(packet.getSourceIP()==socket.gethostname() and packet.getDestIP()==socket.gethostname()):
             print('##### Redundant Packet ######')
         else:
@@ -24,9 +26,9 @@ def main():
             print("Header Length: ", packet.getHeaderLen())
             print("Time To Live: ", packet.getTTL())
             print("Protocol: ", packet.getProtocol())
-            print("Offset: ", packet_tcp.formatTCPHeader())
-            print("Source Port: ", packet_tcp.getSrcPort())
-            print("Destination Port: ", packet_tcp.getDestPort())
+            print("Offset: ", packet_spec.formatHeader())
+            print("Source Port: ", packet_spec.getSrcPort())
+            print("Destination Port: ", packet_spec.getDestPort())
             print("##### End Packet ######")
 
 class PacketIP:
@@ -38,6 +40,7 @@ class PacketIP:
         self.len = 0
 
     def getSourceIP(self):
+        #self.sourceIP = unpackData(4, self.raw_data, 0, 0, "L")
         self.sourceIP = (struct.unpack('! 4B', self.raw_data[12:16])[:4])
         return formatIP(self.sourceIP)
 
@@ -81,22 +84,56 @@ class PacketTCP(PacketIP):
         self.srcPort = []
         self.destPort = []
         self.seqNum = []
-        self.tcp_offset = 0
+        self.offset = 0
     
-    def formatTCPHeader(self):
-        self.tcp_offset = int(self.ip_header_len) * 4 #ipheaderlen is the amount of 32 bit words in the ipheader, this will be the offset in bytes.
-        return self.tcp_offset
+    def formatHeader(self):
+        self.offset = int(self.ip_header_len) * 4 #ipheaderlen is the amount of 32 bit words in the ipheader, this will be the offset in bytes.
+        return self.offset
 
     def getSrcPort(self):
-        self.srcPort = int((struct.unpack('! B', self.raw_data[self.tcp_offset:self.tcp_offset+1])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.tcp_offset+1:self.tcp_offset+2])[0]))
+        self.srcPort = int((struct.unpack('! B', self.raw_data[self.offset:self.offset+1])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+1:self.offset+2])[0]))
         return self.srcPort
 
     def getDestPort(self):
-        self.destPort = int((struct.unpack('! B', self.raw_data[self.tcp_offset+2:self.tcp_offset+3])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.tcp_offset+3:self.tcp_offset+4])[0]))
+        self.destPort = int((struct.unpack('! B', self.raw_data[self.offset+2:self.offset+3])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+3:self.offset+4])[0]))
         return self.destPort
 
+class PacketUDP(PacketIP):
+    def __init__(self, raw_data, ip_header_len):
+        self.raw_data = raw_data
+        self.ip_header_len = ip_header_len
+        self.srcPort = []
+        self.destPort = []
+        self.seqNum = []
+        self.offset = 0
+    
+    def formatHeader(self):
+        self.offset = int(self.ip_header_len) * 4 #ipheaderlen is the amount of 32 bit words in the ipheader, this will be the offset in bytes.
+        return self.offset
 
+    def getSrcPort(self):
+        self.srcPort = int((struct.unpack('! B', self.raw_data[self.offset:self.offset+1])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+1:self.offset+2])[0]))
+        return self.srcPort
 
+    def getDestPort(self):
+        self.destPort = int((struct.unpack('! B', self.raw_data[self.offset+2:self.offset+3])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+3:self.offset+4])[0]))
+        return self.destPort
+
+"""def unpackData(byteAmount, raw_data, offset, bitShift, shiftOp):
+    byteAmountF = '! ' + str(byteAmount) + "B"
+    print(byteAmount)
+    if(byteAmount!=0 and shiftOp=="R"):
+        data = int( (struct.unpack(byteAmountF, raw_data[offset+1:offset+1+byteAmount])[:byteAmount])) >> bitShift
+    elif(byteAmount!=0 and shiftOp=="L"):
+        data = int( (struct.unpack(byteAmountF, raw_data[offset+1:offset+1+byteAmount])[:byteAmount])) << bitShift
+    elif(byteAmount==0 and shiftOp=="R"):
+        data = int( (struct.unpack(byteAmountF, raw_data[offset+1:offset+1+byteAmount])[0])) >> bitShift
+    elif(byteAmount==0 and shiftOp=="L"):
+        data = int( (struct.unpack(byteAmountF, raw_data[offset+1:offset+1+byteAmount])[0])) << bitShift
+    else:
+        data = "Invalid input."
+    return data"""
+        
 def formatIP(ip):
     temp = []
     for i in ip:
