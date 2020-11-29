@@ -1,6 +1,6 @@
 import socket
 import struct
-import packets
+import Capture.packets as packets
 
 def capture(apply=None):
     conn = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)

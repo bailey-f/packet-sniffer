@@ -1,6 +1,6 @@
-import capture as cap
+import Capture.capture as cap
 import threading
-import packets
+import Capture.packets
 import time
 
 packets=[]
