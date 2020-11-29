@@ -12,7 +12,7 @@ Refer to https://docs.google.com/document/d/1LXiltV4p79YEyUGhFiv5oBQvBsQUn4C2TEc
  | |         | +------+-------+  |    enhanced packet    |  |
  | | capture |        |          |       analyser        |  |
  | |         | +------+-------+  |                       |  |
- | |         +-+`[core / main]`--+                       |  |
+ | |         +```[core / main]```                        |  |
  | +----+----+ +--------------+  +-----------------------+  |
  |      |                                                   |
  +----------------------------------------------------------+
