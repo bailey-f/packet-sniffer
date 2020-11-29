@@ -14,7 +14,7 @@ Refer to https://docs.google.com/document/d/1LXiltV4p79YEyUGhFiv5oBQvBsQUn4C2TEc
  | | capture |        |          |       analyser        |  |
  | |         | +------+-------+  |                       |  |
  | |         +-+ [core / main]+--+                       |  |
- | +----+----+ +--------------|  +-----------------------+  |
+ | +----+----+ +--------------+  +-----------------------+  |
  |     |                                                    |
  +----------------------------------------------------------+
        |
@@ -25,4 +25,4 @@ Refer to https://docs.google.com/document/d/1LXiltV4p79YEyUGhFiv5oBQvBsQUn4C2TEc
   +--------------------------+
 ```
 
-[core / main]: (https://github.com/bailey-f/packet-sniffer/tree/homedev/Code/networksniffer/Core)
+  [core / main]: https://github.com/bailey-f/packet-sniffer/tree/homedev/Code/networksniffer/Core
