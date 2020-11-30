@@ -6,13 +6,25 @@ import time
 packets=[]
 
 def print_packet(packet):
-    packets.append(packet)
+    print('\n#### New Packet ####')
+    print(packet.sourceIP)
+    print(packet.destIP)
+    print(packet.vers)
+    print(packet.protocol)
+    print(packet.len)
+    print(packet.headerLen)
+    if(packet.protocol=="UDP"):
+        print("\nUDP INFO: \n")
+    elif(packet.protocol=="TCP"):
+        print("\nTCP INFO: ")
+    print(packet.offset)
+    print(packet.srcPort)
+    print(packet.destPort)
+    print(packet.seqNum)
+
 
 def capture():
     threading._start_new_thread(cap.capture, (), {"apply":print_packet})
-
     while True:
-        print(len(packets))
-        time.sleep(0.5)
-
+        continue
 capture()

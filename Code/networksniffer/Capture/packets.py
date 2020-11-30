@@ -53,13 +53,16 @@ class TCPPacket(Packet):
         self.offset = int(self.headerLen) * 4
         self.srcPort = self._getSrcPort()
         self.destPort = self._getDestPort()
+        self.seqNum = self._getSequenceNum()
 
     def _getSrcPort(self):
         return int((struct.unpack('! B', self.raw_data[self.offset:self.offset+1])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+1:self.offset+2])[0]))
         
-
     def _getDestPort(self):
         return int((struct.unpack('! B', self.raw_data[self.offset+2:self.offset+3])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+3:self.offset+4])[0]))
+
+    def _getSequenceNum(self):
+        return int( ( struct.unpack('! B', self.raw_data[self.offset+4:self.offset+5])[0] ) << 24 ) + int( (struct.unpack('! B', self.raw_data[self.offset+5:self.offset+6])[0] ) << 16 ) + int( (struct.unpack('! B', self.raw_data[self.offset+6:self.offset+7])[0] ) << 8) + int( (struct.unpack('! B', self.raw_data[self.offset+7:self.offset+8])[0] ) )
 
 class UDPPacket(Packet):
     def __init__(self, raw_data):
@@ -67,9 +70,13 @@ class UDPPacket(Packet):
         self.offset = int(self.headerLen) * 4
         self.srcPort = self._getSrcPort()
         self.destPort = self._getDestPort()
+        self.seqNum = self._getSequenceNum()
 
     def _getSrcPort(self):
         return int((struct.unpack('! B', self.raw_data[self.offset:self.offset+1])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+1:self.offset+2])[0]))
         
     def _getDestPort(self):
         return int((struct.unpack('! B', self.raw_data[self.offset+2:self.offset+3])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+3:self.offset+4])[0]))
+    
+    def _getSequenceNum(self):
+        return int( ( struct.unpack('! B', self.raw_data[self.offset+4:self.offset+5])[0] ) << 24 ) + int( (struct.unpack('! B', self.raw_data[self.offset+5:self.offset+6])[0] ) << 16 ) + int( (struct.unpack('! B', self.raw_data[self.offset+6:self.offset+7])[0] ) << 8) + int( (struct.unpack('! B', self.raw_data[self.offset+7:self.offset+8])[0] ) )
