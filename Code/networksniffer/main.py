@@ -1,4 +1,5 @@
 import Capture.capture as cap
+from Epan.data import Data
 import threading
 import Capture.packets
 import time
@@ -6,6 +7,9 @@ import time
 packets=[]
 
 def print_packet(packet):
+
+    data = Data(packet)
+
     print('\n#### New Packet ####')
     print(packet.sourceIP)
     print(packet.destIP)
@@ -21,6 +25,7 @@ def print_packet(packet):
     print(packet.srcPort)
     print(packet.destPort)
     print(packet.seqNum)
+    print(data.payload)
 
 
 def capture():

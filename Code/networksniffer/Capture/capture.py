@@ -5,7 +5,7 @@ import Capture.packets as packets
 def capture(apply=None):
     conn = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
     HOST = socket.gethostbyname(socket.gethostname())
-    conn.bind((HOST, 0))
+    conn.bind((HOST, 80))
     conn.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
     conn.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
