@@ -21,6 +21,8 @@ def print_packet(packet):
         print("\nUDP INFO: \n")
     elif(packet.protocol=="TCP"):
         print("\nTCP INFO: ")
+        print(packet.flags)
+
     print(packet.offset)
     print(packet.srcPort)
     print(packet.destPort)

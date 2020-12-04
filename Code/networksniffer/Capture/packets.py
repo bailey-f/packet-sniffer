@@ -55,6 +55,7 @@ class TCPPacket(Packet):
         self.destPort = self._getDestPort()
         self.seqNum = self._getSequenceNum()
         self.dOffset = self._getTCPHLen()
+        self.flags = self._getFlags()
 
     def _getSrcPort(self):
         return int((struct.unpack('! B', self.raw_data[self.offset:self.offset+1])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+1:self.offset+2])[0]))
@@ -67,6 +68,16 @@ class TCPPacket(Packet):
 
     def _getTCPHLen(self):
         return int((struct.unpack('! B', self.raw_data[self.offset+12:self.offset+13])[0] & 240) >> 4 )
+    
+    def _getFlags(self):
+        offset_reserved_flags = int((struct.unpack('! B', self.raw_data[self.offset+13:self.offset+14])[0]))
+        flag_urg = offset_reserved_flags & 32 >> 5
+        flag_ack = offset_reserved_flags & 16 >> 4
+        flag_psh = offset_reserved_flags & 8 >> 3
+        flag_rst = offset_reserved_flags & 4 >> 2
+        flag_syn = offset_reserved_flags & 2 >> 1
+        flag_fin = offset_reserved_flags & 1
+        return flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin
 
 class UDPPacket(Packet):
     def __init__(self, raw_data):
