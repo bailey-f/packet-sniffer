@@ -1,37 +1,29 @@
 import Capture.capture as cap
-from Epan.data import Data
 import threading
-import Capture.packets
 import time
-
-packets=[]
-
-def print_packet(packet):
-
-    data = Data(packet)
-
-    print('\n#### New Packet ####')
-    print(packet.sourceIP)
-    print(packet.destIP)
-    print(packet.vers)
-    print(packet.protocol)
-    print(packet.len)
-    print(packet.headerLen)
-    if(packet.protocol=="UDP"):
-        print("\nUDP INFO: \n")
-    elif(packet.protocol=="TCP"):
-        print("\nTCP INFO: ")
-        print(packet.flags)
-
-    print(packet.offset)
-    print(packet.srcPort)
-    print(packet.destPort)
-    print(packet.seqNum)
-    print(data.payload)
+from GUI import userinterface as ui
 
 
-def capture():
-    threading._start_new_thread(cap.capture, (), {"apply":print_packet})
-    while True:
-        continue
-capture()
+class Application():
+
+    def __init__(self):
+        # Create UI
+        self.ui = ui.UserInterface()
+        self.ui.add_toolbar_command("Start capture", self.start_capture)
+    
+    def start(self):
+        while True:
+            self.ui.render()
+    
+    def start_capture(self):
+        threading._start_new_thread(cap.capture, (), {"apply":self.register_packet})
+    
+    def register_packet(self, packet):
+        self.ui.register_packet(packet)
+        # do other schnizzle here
+
+    
+# Exec main if this python file is run directly
+if __name__ == "__main__":
+    app = Application()
+    app.start()

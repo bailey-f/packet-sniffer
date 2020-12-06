@@ -1,25 +1,54 @@
 import tkinter as tk
+from tkinter import *
 
-class Application(tk.Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack()
-        self.create_widgets()
+class NavBar(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        tk.Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
 
-    def create_widgets(self):
-        self.toolbar = tk.Frame(self, bg="blue")
-        self.test = tk.Button(self.toolbar, text="test", command="doNothing")
-        self.test.pack(side="left", padx=2, pady=2)
+class StatusBar(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        tk.Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+        statusbar = Label(self, text="Status: 0", bd=1, relief=SUNKEN, anchor=W)
+        statusbar.pack(side="bottom", fill="x")
+
+class ToolBar(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        tk.Frame.__init__(self, parent, *args, **kwargs)
+        self.parent = parent
+        self.toolbar = Menu(self)
+        self.parent.root.config(menu=self.toolbar)
+        self.subMenu = Menu(self.toolbar, tearoff=0)
+        self.toolbar.add_cascade(label='File', menu=self.subMenu)
+    
+    def add_command(self, name, func):
+        self.subMenu.add_command(label=name, command=func)
+
+
+class UserInterface(tk.Frame):
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.geometry("350x200")
+
+        tk.Frame.__init__(self, self.root)
+        self.statusbar = StatusBar(self)
+        self.toolbar = ToolBar(self)
+        self.navbar = NavBar(self)
+
+        self.text = tk.Text(self.root, height=100, width=100)
+        self.text.pack(side="left", fill="x")
+
+        self.statusbar.pack(side="bottom", fill="x")
         self.toolbar.pack(side="top", fill="x")
+        self.navbar.pack(side="left", fill="y")
+    
+    def register_packet(self, packet):
+        self.text.insert(tk.END, "\n" + packet.sourceIP)
 
-        self.quit = tk.Button(self, text="QUIT", fg="red",
-                              command=self.master.destroy)
-        self.quit.pack(side="bottom")
-        
-    def say_hi(self):
-        print("hi there, everyone!")
+    def add_toolbar_command(self, name, func):
+        self.toolbar.add_command(name, func)
 
-root = tk.Tk()
-app = Application(master=root)
-app.mainloop()
+    def render(self):
+        self.root.mainloop()
+    

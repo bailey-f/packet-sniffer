@@ -9,6 +9,8 @@ class Packet():
         self.len = self._getLen()
         self.headerLen = self._getHeaderLen()
         self.protocol = self._getProtocol()
+        self.offset = int(self.headerLen) * 4
+        self.payload = None
 
     def _formatIP(self, ip):
         temp = []
@@ -47,15 +49,16 @@ class Packet():
             proto = "UDP"
         return proto
 
+
 class TCPPacket(Packet):
     def __init__(self, raw_data):
         super().__init__(raw_data)
-        self.offset = int(self.headerLen) * 4
         self.srcPort = self._getSrcPort()
         self.destPort = self._getDestPort()
         self.seqNum = self._getSequenceNum()
         self.dOffset = self._getTCPHLen()
         self.flags = self._getFlags()
+        self.payload = Payload(self)
 
     def _getSrcPort(self):
         return int((struct.unpack('! B', self.raw_data[self.offset:self.offset+1])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+1:self.offset+2])[0]))
@@ -82,11 +85,11 @@ class TCPPacket(Packet):
 class UDPPacket(Packet):
     def __init__(self, raw_data):
         super().__init__(raw_data)
-        self.offset = int(self.headerLen) * 4
         self.srcPort = self._getSrcPort()
         self.destPort = self._getDestPort()
         self.seqNum = self._getSequenceNum()
         self.dOffset = self._getUDPHLen()
+        self.payload = Payload(self)
 
     def _getSrcPort(self):
         return int((struct.unpack('! B', self.raw_data[self.offset:self.offset+1])[0]) << 8) + int((struct.unpack('! B', self.raw_data[self.offset+1:self.offset+2])[0]))
@@ -99,3 +102,11 @@ class UDPPacket(Packet):
 
     def _getUDPHLen(self):
         return int((struct.unpack('! B', self.raw_data[self.offset+12:self.offset+13])[0] & 240) >> 4 )
+
+class Payload():
+    def __init__(self, packet):
+        self.packet = packet
+        self.data = self._getData()
+
+    def _getData(self):
+        return str(self.packet.raw_data[self.packet.dOffset:].decode('unicode_escape'))
