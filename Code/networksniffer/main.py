@@ -10,6 +10,7 @@ class Application():
         # Create UI
         self.ui = ui.UserInterface()
         self.ui.add_toolbar_command("Start capture", self.start_capture)
+        
     
     def start(self):
         while True:
@@ -20,7 +21,7 @@ class Application():
     
     def register_packet(self, packet):
         self.ui.register_packet(packet)
-        # do other schnizzle here
+        # do other shnizzle
 
     
 # Exec main if this python file is run directly

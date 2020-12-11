@@ -109,4 +109,8 @@ class Payload():
         self.data = self._getData()
 
     def _getData(self):
-        return str(self.packet.raw_data[self.packet.dOffset:].decode('unicode_escape'))
+        try:
+            data = str(self.packet.raw_data[self.packet.dOffset:].decode('unicode_escape'))
+        except(UnicodeDecodeError):
+            data = ""
+        return data
