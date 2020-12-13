@@ -6,19 +6,54 @@ class NavBar(tk.Frame):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
 
+class PacketFrame(Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.parent = parent
+        
+        self.packetframe = Frame(self, bg="black", width=800, height=500)
+        self.packetframe.pack(side="left", fill="both", padx=2, pady=2)
+        self.packetframe2 = Frame(self.packetframe, bg="lightgrey", width=800, height=500, pady=2, padx=2)
+        self.packetframe2.pack(side="left", fill="both", padx=2, pady=2, expand=True)
+        self.h_number = Label(self.packetframe2, bg="white", cursor="dot", text="Number:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_number.grid(column=0, row=0)
+        self.h_src = Label(self.packetframe2, bg="white", cursor="dot", text="Source:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_src.grid(column=1, row=0, columnspan=5)
+        self.h_dest = Label(self.packetframe2, bg="white", cursor="dot", text="Destination:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_dest.grid(column=6, row=0, columnspan=5)
+        self.h_proto = Label(self.packetframe2, bg="white", cursor="dot", text="Protocol:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_proto.grid(column=11, row=0)
+        self.h_len = Label(self.packetframe2, bg="white", cursor="dot", text="Length:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_len.grid(column=12, row=0, columnspan=1)
+        self.h_info = Label(self.packetframe2, bg="white", cursor="dot", text="Info:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_info.grid(column=13, row=0)
+
+class DataFrame(Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.parent = parent
+        self.dataframe = Frame(self, bg="black", width=800, height=300)
+        self.dataframe.pack(side="bottom", fill="both", padx=2, pady=2)
+        self.dataframe2 = Frame(self.dataframe, bg="lightgrey", width=800, height=300, pady=2, padx=2)
+        self.dataframe2.pack(side="bottom", fill="both", padx=2, pady=2, expand=True)
+        
 class StatusBar(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-        statusbar = Label(self, text="Status: 0", bd=1, relief=SUNKEN, anchor=W)
-        statusbar.pack(side="bottom", fill="x")
+        self.statusbar = Label(self, text="Status: Doing nothing...", bd=1,
+         relief=SUNKEN, anchor=W, width=1080)
+        self.statusbar.pack(side=BOTTOM)
+        self.pack(side=BOTTOM)
+        
+    def change_status(self, status):
+        self.statusbar.config(text=str(status))
 
-class ToolBar(tk.Frame):
+class ToolBar():
     def __init__(self, parent, *args, **kwargs):
-        tk.Frame.__init__(self, parent, *args, **kwargs)
         self.parent = parent
-        self.toolbar = Menu(self)
-        self.parent.root.config(menu=self.toolbar)
+        self.toolbar = Menu(self.parent)
+        self.parent.config(menu=self.toolbar)
         self.subMenu = Menu(self.toolbar, tearoff=0)
         self.toolbar.add_cascade(label='File', menu=self.subMenu)
     
@@ -27,51 +62,56 @@ class ToolBar(tk.Frame):
         
 
 
-class UserInterface(tk.Frame):
+class UserInterface(tk.Tk):
     def __init__(self):
-        self.root = tk.Tk()
-        self.root.geometry("350x200")
-
-        tk.Frame.__init__(self, self.root)
-        self.statusbar = StatusBar(self)
+        super().__init__(screenName="Packet Sniffer")
+        self.geometry("1080x720")
+        self.state('zoomed')
+        self.title('Packet Sniffer')
         self.toolbar = ToolBar(self)
-        self.navbar = NavBar(self)
+        self.statusbar = StatusBar(self)
+        self.dataframe = DataFrame(self)
+        self.packetframe = PacketFrame(self)
 
-        self.text = tk.Text(self.root, height=50, width=50)
-        self.text.pack(side="left", fill="x")
-        self.scroll_bar = tk.Scrollbar(self.root)
+        self.dataframe.pack(side="bottom", fill="both", padx=2, pady=2, expand=True)
+        self.packetframe.pack(side="left", fill="both", padx=2, pady=2, expand=True)
+       
+        """    
+        self.dataframe = FrameController(self, bg="black", width=800, height=300)
+        self.dataframe.pack(side="bottom", fill="both", padx=2, pady=2)
+        self.dataframe2 = FrameController(self.dataframe, bg="lightgrey", width=800, height=300, pady=2, padx=2)
+        self.dataframe2.pack(side="bottom", fill="both", padx=2, pady=2, expand=True)
+        """
+        """
+        self.packetframe = FrameController(self, bg="black", width=800, height=500)
+        self.packetframe.pack(side="left", fill="both", padx=2, pady=2)
+        self.packetframe2 = FrameController(self.packetframe, bg="lightgrey", width=800, height=500, pady=2, padx=2)
+        self.packetframe2.pack(side="left", fill="both", padx=2, pady=2, expand=True)
+        self.h_number = Label(self.packetframe2, bg="white", cursor="dot", text="Number:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_number.grid(column=0, row=0)
+        self.h_src = Label(self.packetframe2, bg="white", cursor="dot", text="Source:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_src.grid(column=1, row=0, columnspan=5)
+        self.h_dest = Label(self.packetframe2, bg="white", cursor="dot", text="Destination:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_dest.grid(column=6, row=0, columnspan=5)
+        self.h_proto = Label(self.packetframe2, bg="white", cursor="dot", text="Protocol:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_proto.grid(column=11, row=0)
+        self.h_len = Label(self.packetframe2, bg="white", cursor="dot", text="Length:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_len.grid(column=12, row=0, columnspan=1)
+        self.h_info = Label(self.packetframe2, bg="white", cursor="dot", text="Info:", font=("roboto", 12), borderwidth=2, relief="groove")
+        self.h_info.grid(column=13, row=0)
+        """
 
-        self.scroll_bar.pack(side="right")
-        self.statusbar.pack(side="bottom", fill="x")
-        self.toolbar.pack(side="top", fill="x")
-        self.navbar.pack(side="left", fill="y")
+
     
     def register_packet(self, packet):
-        self.text.insert(tk.END, "\n----------| NEW PACKET |----------\n")
-        self.text.insert(tk.END, "\nSource IP: " + str(packet.sourceIP))
-        self.text.insert(tk.END, "\nDestination IP: " + str(packet.destIP))
-        self.text.insert(tk.END, "\nVers: " + str(packet.vers))
-        self.text.insert(tk.END, "\nProtocol: " + str(packet.protocol))
-        self.text.insert(tk.END, "\nSource Port: " + str(packet.srcPort))
-        self.text.insert(tk.END, "\nDestination Port: " + str(packet.destPort))
-        self.text.insert(tk.END, "\nSequence Number: " + str(packet.seqNum))
-        if(packet.protocol=="TCP"):
-            self.text.insert(tk.END, "\nFlags: " + str(packet.flags))
+        self.statusbar.change_status("Status: Capturing Packets...")
+
+        self.statusbar.change_status("Status: Doing nothing...")
         
-        self.text.insert(tk.END, "\nPayload: \n" + str(packet.payload.data))
-        self.text.insert(tk.END, "\n----------| END PACKET |----------\n")
-        
-
-
-
-
-
-
-
 
     def add_toolbar_command(self, name, func):
         self.toolbar.add_command(name, func)
 
     def render(self):
-        self.root.mainloop()
+        self.mainloop()
     
