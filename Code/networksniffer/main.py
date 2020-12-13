@@ -16,6 +16,7 @@ class Application():
         
     
     def register_packet(self, packet):
+        time.sleep(0.5)
         self.ui.register_packet(packet)
         # do other shnizzle
 
