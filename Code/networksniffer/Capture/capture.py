@@ -23,6 +23,7 @@ class Capture():
     
     def stop(self):
         self.running = False
+        
 
     def loop(self):
         while self.running:

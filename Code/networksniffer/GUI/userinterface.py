@@ -21,20 +21,21 @@ class PacketFrame(Frame):
         # make the canvas & scrollbar for where we are holding our packets
         self.packetrows = Canvas(self.packetframe2, bg="lightgrey", width=800, height=500, relief="flat")
         self.vsb = Scrollbar(self.packetframe2, orient="vertical", command=self.packetrows.yview)
-        #self.vsb.grid(row=2, column=0, sticky="ns")
+        self.vsb.grid(row=0, column=16, sticky="ns")
         self.packetrows.configure(yscrollcommand=self.vsb.set)
+        self.packetrows.config(scrollregion=self.packetrows.bbox("all"))
         self.packetrows.grid(row=0, column=0, sticky="news", pady=2, padx=2)
 
         # make the headers
-        self.h_number = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Number:", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_number = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Number", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_number.grid(column=0, row=0, columnspan=1)
-        self.h_src = Label(self.packetrows, bg="lightgrey", cursor="dot", text="     Source:     ", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_src = Label(self.packetrows, bg="lightgrey", cursor="dot", text="     Source     ", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_src.grid(column=1, row=0)
-        self.h_dest = Label(self.packetrows, bg="lightgrey", cursor="dot", text="     Destination:     ", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_dest = Label(self.packetrows, bg="lightgrey", cursor="dot", text="     Destination     ", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_dest.grid(column=6, row=0)
-        self.h_proto = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Protocol:", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_proto = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Protocol", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_proto.grid(column=11, row=0, columnspan=1)
-        self.h_len = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Length:", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_len = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Length", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_len.grid(column=12, row=0, columnspan=1)
         
 
@@ -67,6 +68,7 @@ class PacketFrame(Frame):
                 buttons[i].configure(text=str("test"), font=("roboto", 10), relief="flat")
                 buttons[i].grid(row=(self.packetcount+10), column=12, sticky="news")
         
+        self.packetrows.update_idletasks()
 
 
 class DataFrame(Frame):
@@ -117,39 +119,11 @@ class UserInterface(tk.Tk):
 
         self.dataframe.pack(side="bottom", fill="both", padx=2, pady=2, expand=True)
         self.packetframe.pack(side="left", fill="both", padx=2, pady=2, expand=True)
-        """    
-        self.dataframe = FrameController(self, bg="black", width=800, height=300)
-        self.dataframe.pack(side="bottom", fill="both", padx=2, pady=2)
-        self.dataframe2 = FrameController(self.dataframe, bg="lightgrey", width=800, height=300, pady=2, padx=2)
-        self.dataframe2.pack(side="bottom", fill="both", padx=2, pady=2, expand=True)
-        """
-        """
-        self.packetframe = FrameController(self, bg="black", width=800, height=500)
-        self.packetframe.pack(side="left", fill="both", padx=2, pady=2)
-        self.packetframe2 = FrameController(self.packetframe, bg="lightgrey", width=800, height=500, pady=2, padx=2)
-        self.packetframe2.pack(side="left", fill="both", padx=2, pady=2, expand=True)
-        self.h_number = Label(self.packetframe2, bg="white", cursor="dot", text="Number:", font=("roboto", 12), borderwidth=2, relief="groove")
-        self.h_number.grid(column=0, row=0)
-        self.h_src = Label(self.packetframe2, bg="white", cursor="dot", text="Source:", font=("roboto", 12), borderwidth=2, relief="groove")
-        self.h_src.grid(column=1, row=0, columnspan=5)
-        self.h_dest = Label(self.packetframe2, bg="white", cursor="dot", text="Destination:", font=("roboto", 12), borderwidth=2, relief="groove")
-        self.h_dest.grid(column=6, row=0, columnspan=5)
-        self.h_proto = Label(self.packetframe2, bg="white", cursor="dot", text="Protocol:", font=("roboto", 12), borderwidth=2, relief="groove")
-        self.h_proto.grid(column=11, row=0)
-        self.h_len = Label(self.packetframe2, bg="white", cursor="dot", text="Length:", font=("roboto", 12), borderwidth=2, relief="groove")
-        self.h_len.grid(column=12, row=0, columnspan=1)
-        self.h_info = Label(self.packetframe2, bg="white", cursor="dot", text="Info:", font=("roboto", 12), borderwidth=2, relief="groove")
-        self.h_info.grid(column=13, row=0)
-        """
 
-
-    
     def register_packet(self, packet):
         self.statusbar.change_status("Status: Capturing Packets...")
         self.packetframe.add_row(packet)
-        self.statusbar.change_status("Status: Doing nothing...")
         
-
     def add_toolbar_command(self, name, func):
         self.toolbar.add_command(name, func)
 
