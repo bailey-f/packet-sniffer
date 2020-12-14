@@ -106,12 +106,29 @@ class UDPPacket(Packet):
 class Payload():
     def __init__(self, packet):
         self.packet = packet
+        self.payloaddata = self.packet.raw_data[self.packet.dOffset:]
         self.data = self._getData()
 
     def _getData(self):
+        data = []
+        n=2
         try:
-            data = str(self.packet.raw_data[self.packet.dOffset:].decode('unicode_escape'))
+            for i in range(0, len(str(self.payloaddata)), n):
+                byte = self.payloaddata[i:i + n]
+                data.append(byte)
+            for i in range(0, len(data)):
+                try:
+                    data[i] = data[i].decode('unicode_escape')
+                except:
+                    pass
+                    data[i] = ".."
+            """
+            datastr = hex(self.packet.raw_data[self.packet.dOffset:])
+            print(datastr)
+            data = data.append(([datastr[i:i+n] for i in range(0, len(datastr), n)]).decode('unicode_escape'))
+            print(data)
+            """
         except:
             pass
-            data = ""
+            data = ".."
         return data

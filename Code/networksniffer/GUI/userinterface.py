@@ -11,8 +11,10 @@ class PacketFrame(Frame):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
         self.packetcount = 0
+        self.all_rows = []
+        self.buttonsinrow = []
+        self.buttoncount = 0
 
-        
         # make the outer packet frame, then make the inner packet frame to hold the headers
         self.packetframe = Frame(self, bg="grey", width=800, height=500)
         self.packetframe.pack(side="left", fill="y", padx=2, pady=2)
@@ -20,10 +22,10 @@ class PacketFrame(Frame):
         self.packetframe2.pack(side="left", fill="both", padx=2, pady=2)
         # make the canvas & scrollbar for where we are holding our packets
         self.packetrows = Canvas(self.packetframe2, bg="lightgrey", width=800, height=500, relief="flat")
-        self.vsb = Scrollbar(self.packetframe2, orient="vertical", command=self.packetrows.yview)
-        self.vsb.grid(row=0, column=16, sticky="ns")
-        self.packetrows.configure(yscrollcommand=self.vsb.set)
-        self.packetrows.config(scrollregion=self.packetrows.bbox("all"))
+        #self.vsb = Scrollbar(self.packetframe2, orient="vertical", command=self.packetrows.yview)
+        #self.vsb.grid(row=0, column=16, sticky="ns")
+        #self.packetrows.configure(yscrollcommand=self.vsb.set)
+        #self.packetrows.config(scrollregion=self.packetrows.bbox("all"))
         self.packetrows.grid(row=0, column=0, sticky="news", pady=2, padx=2)
 
         # make the headers
@@ -40,36 +42,57 @@ class PacketFrame(Frame):
         
 
 
-    def add_row(self, packet):
+    def add_row(self, packet, packetid):
         self.packetcount += 1
         #buttons.configure(text=str(self.packetcount)+" "+str(packet.sourceIP)+" "+
         #        str(packet.destIP)+" "+str(packet.protocol)+" "+str("test"))
         #buttons.grid(row=(self.packetcount+10), column=0, columnspan=12, sticky="news")
         self.headers = ["Number", "Source", "Destination", "Protocol", "Information"]
-        buttons = [Button() for i in range(0, len(self.headers))]
-
-        
+        self.buttons = [Button() for i in range(0, len(self.headers))]
+        self.buttonsinrow = []
         for i in range(0, len(self.headers)):
-            buttons[i] = Button(self.packetrows)
+            self.buttoncount +=1
+            self.buttons[i] = Button(self.packetrows)
             
             if(self.headers[i]=="Number"):
-                buttons[i].configure(text=str(self.packetcount), font=("roboto", 10), relief="flat")
-                buttons[i].grid(row=(self.packetcount+10), column=0, sticky="news")
+                self.buttons[i].configure(text=str(self.packetcount), font=("roboto", 10), relief="flat")
+                self.buttons[i].grid(row=(self.packetcount+10), column=0, sticky="news")
             elif(self.headers[i]=="Source"):
-                buttons[i].configure(text=str(packet.sourceIP), font=("roboto", 10), relief="flat")
-                buttons[i].grid(row=(self.packetcount+10), column=1, sticky="news")
+                self.buttons[i].configure(text=str(packet.sourceIP), font=("roboto", 10), relief="flat")
+                self.buttons[i].grid(row=(self.packetcount+10), column=1, sticky="news")
             elif(self.headers[i]=="Destination"):
-                buttons[i].configure(text=str(packet.destIP), font=("roboto", 10), relief="flat")
-                buttons[i].grid(row=(self.packetcount+10), column=6, sticky="news")
+                self.buttons[i].configure(text=str(packet.destIP), font=("roboto", 10), relief="flat")
+                self.buttons[i].grid(row=(self.packetcount+10), column=6, sticky="news")
             elif(self.headers[i]=="Protocol"):
-                buttons[i].configure(text=str(packet.protocol), font=("roboto", 10), relief="flat")
-                buttons[i].grid(row=(self.packetcount+10), column=11, sticky="news")
+                self.buttons[i].configure(text=str(packet.protocol), font=("roboto", 10), relief="flat")
+                self.buttons[i].grid(row=(self.packetcount+10), column=11, sticky="news")
             elif(self.headers[i]=="Information"):
-                buttons[i].configure(text=str("test"), font=("roboto", 10), relief="flat")
-                buttons[i].grid(row=(self.packetcount+10), column=12, sticky="news")
-        
+                self.buttons[i].configure(text=str("test"), font=("roboto", 10), relief="flat")
+                self.buttons[i].grid(row=(self.packetcount+10), column=12, sticky="news")
+            self.buttons[i].configure(activebackground="lightblue", highlightcolor="lightblue", borderwidth=0, command= lambda: self.on_click(packet, packetid))
+            #self.buttons[i].bind("<Enter>", self.on_enter)
+            #self.buttons[i].bind("<Leave>", self.on_leave)
+            self.buttonsinrow.append(self.buttons[i])
+        self.all_rows.append(self.buttonsinrow)
         self.packetrows.update_idletasks()
 
+    """
+    def on_enter(self, e):
+        self.buttons[self.buttoncount].configure(bg="lightblue")
+    def on_leave(self, e):
+        self.buttons[self.buttoncount].configure(bg="white")
+    """
+    def on_click(self, packet, packetid):
+        # get the specific row of buttons, set them all to unhighlited, then highlight the row of buttons.
+        specific_row = self.all_rows[packetid-1]
+        for i in range(0, len(self.all_rows)):
+            for j in range(0, len(self.headers)):
+                self.all_rows[i][j].configure(state=NORMAL)
+        for i in range(0, len(self.headers)):
+            specific_row[i].configure(state=ACTIVE)
+        # actually load data
+        #self.parent.dataframe.set_data(packet)
+        print(packet.payload.data)
 
 class DataFrame(Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -79,6 +102,9 @@ class DataFrame(Frame):
         self.dataframe.pack(side="bottom", fill="both", padx=2, pady=2)
         self.dataframe2 = Frame(self.dataframe, bg="lightgrey", width=800, height=300, pady=2, padx=2)
         self.dataframe2.pack(side="bottom", fill="both", padx=2, pady=2, expand=True)
+    
+    #def set_data(self, packet):
+        
         
 class StatusBar(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -104,7 +130,6 @@ class ToolBar():
         self.subMenu.add_command(label=name, command=func)
         
 
-
 class UserInterface(tk.Tk):
     def __init__(self):
         super().__init__(screenName="Packet Sniffer")
@@ -113,6 +138,7 @@ class UserInterface(tk.Tk):
         self.title('Packet Sniffer')
         self.toolbar = ToolBar(self)
         self.statusbar = StatusBar(self)
+        self.packetid = 0
         
         self.dataframe = DataFrame(self)
         self.packetframe = PacketFrame(self)
@@ -122,7 +148,8 @@ class UserInterface(tk.Tk):
 
     def register_packet(self, packet):
         self.statusbar.change_status("Status: Capturing Packets...")
-        self.packetframe.add_row(packet)
+        self.packetid += 1
+        self.packetframe.add_row(packet, self.packetid)
         
     def add_toolbar_command(self, name, func):
         self.toolbar.add_command(name, func)
