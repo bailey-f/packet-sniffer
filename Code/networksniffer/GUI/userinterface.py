@@ -29,15 +29,20 @@ class PacketFrame(Frame):
         self.packetrows.grid(row=0, column=0, sticky="news", pady=2, padx=2)
 
         # make the headers
-        self.h_number = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Number", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_number = Label(self.packetrows, bg="lightgrey", cursor="dot", 
+            text="Number", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_number.grid(column=0, row=0, columnspan=1)
-        self.h_src = Label(self.packetrows, bg="lightgrey", cursor="dot", text="     Source     ", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_src = Label(self.packetrows, bg="lightgrey", cursor="dot",
+            text="     Source     ", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_src.grid(column=1, row=0)
-        self.h_dest = Label(self.packetrows, bg="lightgrey", cursor="dot", text="     Destination     ", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_dest = Label(self.packetrows, bg="lightgrey", cursor="dot",
+            text="     Destination     ", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_dest.grid(column=6, row=0)
-        self.h_proto = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Protocol", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_proto = Label(self.packetrows, bg="lightgrey", cursor="dot",
+            text="Protocol", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_proto.grid(column=11, row=0, columnspan=1)
-        self.h_len = Label(self.packetrows, bg="lightgrey", cursor="dot", text="Length", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_len = Label(self.packetrows, bg="lightgrey", cursor="dot", 
+            text="Length", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_len.grid(column=12, row=0, columnspan=1)
         
 
@@ -69,7 +74,8 @@ class PacketFrame(Frame):
             elif(self.headers[i]=="Information"):
                 self.buttons[i].configure(text=str("test"), font=("roboto", 10), relief="flat")
                 self.buttons[i].grid(row=(self.packetcount+10), column=12, sticky="news")
-            self.buttons[i].configure(activebackground="lightblue", highlightcolor="lightblue", borderwidth=0, command= lambda: self.on_click(packet, packetid))
+            self.buttons[i].configure(activebackground="lightblue", highlightcolor="lightblue",
+                borderwidth=0, command= lambda: self.on_click(packet, packetid))
             #self.buttons[i].bind("<Enter>", self.on_enter)
             #self.buttons[i].bind("<Leave>", self.on_leave)
             self.buttonsinrow.append(self.buttons[i])
@@ -102,10 +108,48 @@ class DataFrame(Frame):
         self.dataframe.pack(side="bottom", fill="both", padx=2, pady=2)
         self.dataframe2 = Frame(self.dataframe, bg="lightgrey", width=800, height=300, pady=2, padx=2)
         self.dataframe2.pack(side="bottom", fill="both", padx=2, pady=2, expand=True)
+        self.hexrows = Canvas(self.dataframe2, bg="lightgrey", width=800, height=300, relief="flat")
+        self.hexrows.grid(row=0, column=0, sticky="news", pady=2, padx=2)
+        self.unicoderows = Canvas(self.dataframe2, bg="lightgrey", width=800, height=300, relief="flat")
+        self.unicoderows.grid(row=0, column=0, sticky="news", pady=2, padx=2)
+
+        self.h_hex = Label(self.hexrows, bg="lightgrey", cursor="dot", text="Data", font=("roboto", 12), 
+            borderwidth=2, relief="flat")
+        self.h_hex.grid(column=0, row=0, columnspan=1)
+
+    def set_data(self, packet):
+        self.rows_hex = 0
+        self.rows_unicode = 0
+        self.all_rows_hex = []
+        self.all_rows_unicode = []
+        self.buttonsinrow_hex = []
+        self.buttonsinrow_unicode = []
+        self.buttoncount_hex = 0
+        self.buttoncount_unicode = 0
+        self.headers_hex = ["Row", "Hex Data"]
+        self.headers_unicode = ["Unicode Data"]
+        self.buttons_hex = [Button() for i in range(0, len(self.headers_hex))]
+        self.buttons_unicode = [Button() for i in range(0, len(self.headers_unicode))]
+        self.buttonsinrow_hex = []
+        self.buttonsinrow_unicode = []
+        
+        n=2
+        for i in range(0, len(str(packet.payloaddata)), n):
+            hex_grid_values = []
+            byte = packet.payloaddata[i:i +n]
+            hex_grid_values.append(byte)
+        
+        
+        for i in range(0, len(self.headers_hex)):
+            self.buttoncount_hex +=1
+            self.buttons_hex[i] = Button(self.hexrows)
+            if(self.headers_hex[i]=="Row"):
+                self.buttons_hex[i].configure(text=str(hex_grid_values[i]), font=("roboto", 10), relief="flat")
+                self.buttons_hex[i].grid(row=(self.rows_hex), column=0, sticky="news")
+
+        # make the headers
+        
     
-    #def set_data(self, packet):
-        
-        
 class StatusBar(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
