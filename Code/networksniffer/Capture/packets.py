@@ -107,9 +107,10 @@ class Payload():
     def __init__(self, packet):
         self.packet = packet
         self.payloaddata = self.packet.raw_data[self.packet.dOffset:]
+        self.decdata = self._getDecData()
         self.data = self._getData()
 
-    def _getData(self):
+    def _getDecData(self):
         data = []
         n=2
         try:
@@ -131,5 +132,32 @@ class Payload():
         except:
             pass
             data = ".."
+            
         return data
 
+    def _getData(self):
+        data = []
+        n=2
+        try:
+            for i in range(0, len(str(self.payloaddata)), n):
+                byte = self.payloaddata[i:i + n]
+                data.append(byte)
+            for i in range(0, len(data)):
+                try:
+                    if(data[i]==""):
+                        data[i] = ".."
+                    else:
+                        data[i] = data[i].hex()
+                except:
+                    pass
+                    data[i] = ".."
+            """
+            datastr = hex(self.packet.raw_data[self.packet.dOffset:])
+            print(datastr)
+            data = data.append(([datastr[i:i+n] for i in range(0, len(datastr), n)]).decode('unicode_escape'))
+            print(data)
+            """
+        except:
+            pass
+            data = ".."
+        return data
