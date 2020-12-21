@@ -123,12 +123,6 @@ class Payload():
                 except:
                     pass
                     data[i] = ".."
-            """
-            datastr = hex(self.packet.raw_data[self.packet.dOffset:])
-            print(datastr)
-            data = data.append(([datastr[i:i+n] for i in range(0, len(datastr), n)]).decode('unicode_escape'))
-            print(data)
-            """
         except:
             pass
             data = ".."
@@ -151,12 +145,6 @@ class Payload():
                 except:
                     pass
                     data[i] = ".."
-            """
-            datastr = hex(self.packet.raw_data[self.packet.dOffset:])
-            print(datastr)
-            data = data.append(([datastr[i:i+n] for i in range(0, len(datastr), n)]).decode('unicode_escape'))
-            print(data)
-            """
         except:
             pass
             data = ".."
