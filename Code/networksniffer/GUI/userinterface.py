@@ -18,38 +18,50 @@ class PacketFrame(Frame):
         self.buttonsinrow = []
         self.buttoncount = 0
 
+        
         # make the outer packet frame, then make the inner packet frame to hold the headers
         self.packetframe = Frame(self, bg="grey")
         self.packetframe.pack(side="left", fill="both", padx=2, pady=2)
-        self.packetframe2 = Frame(self.packetframe, bg="lightgrey" ,pady=2, padx=2)
-        self.packetframe2.pack(side="left", fill="both", padx=2, pady=2)
+        self.packetframe2 = Frame(self.packetframe, bg="lightgrey", pady=2, padx=2, height=668, width=510, bd=0)
+        self.packetframe2.grid(row=0, column=0, sticky="news", pady=2, padx=2)
+        self.packetframe.pack_propagate(0)
+        self.packetframe2.grid_propagate(0)
 
         # make the canvas & scrollbar for where we are holding our packets
-        self.packetrows = Canvas(self.packetframe2, bg="lightgrey",relief="flat")
-        self.packetrows.pack(side="left", fill="both")
+        self.packetrows = Canvas(self.packetframe2, bg="lightgrey",relief="flat", height=655, width=480, bd=0)
+        self.packetrows_vsb = Scrollbar(self.packetframe2, orient="vertical", command=self.packetrows.yview, bd=0, bg="white", activebackground="white", highlightcolor="white")
+       
+        self.packetframe3 = Frame(self.packetframe2, bg="lightgrey", height=655, width=480, bd=0)
+        self.packetrows.create_window((0,0), anchor="nw", window=self.packetframe3) 
+        self.packetrows.update_idletasks()
+
+        self.packetrows.configure(scrollregion=self.packetrows.bbox("all"), yscrollcommand=self.packetrows_vsb.set)
+
+        #self.packetrows.grid_propagate(0)
         self.packetrows.grid(row=0, column=0, sticky="news", pady=2, padx=2)
+        self.packetrows_vsb.grid(row=0, column=18, sticky="ns")
+
 
         # make the headers
-        self.h_number = Label(self.packetrows, bg="white", cursor="dot", 
+        self.h_number = Label(self.packetframe3, bg="white", cursor="dot", 
             text="Number", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_number.grid(column=0, row=0, columnspan=1)
-        self.h_src = Label(self.packetrows, bg="white", cursor="dot",
+        self.h_src = Label(self.packetframe3, bg="white", cursor="dot",
             text="     Source     ", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_src.grid(column=1, row=0)
-        self.h_dest = Label(self.packetrows, bg="white", cursor="dot",
+        self.h_dest = Label(self.packetframe3, bg="white", cursor="dot",
             text="     Destination     ", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_dest.grid(column=6, row=0)
-        self.h_proto = Label(self.packetrows, bg="white", cursor="dot",
+        self.h_proto = Label(self.packetframe3, bg="white", cursor="dot",
             text="Protocol", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_proto.grid(column=11, row=0, columnspan=1)
-        self.h_len = Label(self.packetrows, bg="white", cursor="dot", 
-            text="   Header Length    ", font=("roboto", 12), borderwidth=2, relief="flat")
+        self.h_len = Label(self.packetframe3, bg="white", cursor="dot", 
+            text="   Header Length   ", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_len.grid(column=12, row=0, columnspan=1)
         
-
-
     def add_row(self, packet, packetid):
         self.packetcount += 1
+        self.capturing = True
         # create a new row of buttons
         self.buttons = [Button() for i in range(0, len(self.headers))]
         self.buttonsinrow = []
@@ -57,7 +69,7 @@ class PacketFrame(Frame):
         # set the buttons, configure and pack them
         for i in range(0, len(self.headers)):
             self.buttoncount +=1
-            self.buttons[i] = Button(self.packetrows)
+            self.buttons[i] = Button(self.packetframe3)
             if(self.headers[i]=="Number"):
                 self.buttons[i].configure(text=str(self.packetcount))
                 self.buttons[i].grid(row=(self.packetcount+10), column=0, sticky="news")
@@ -79,7 +91,8 @@ class PacketFrame(Frame):
             self.buttonsinrow.append(self.buttons[i])
         self.all_rows.append(self.buttonsinrow)
         self.packetrows.update()
-
+        self.packetrows.configure(scrollregion=self.packetrows.bbox("all"))
+        
     
     def on_hover(self, button):
         button.bind("<Leave>", func=lambda e: button.config(background="white"))
@@ -113,14 +126,15 @@ class DataFrame(Frame):
         self.dataframe = Frame(self, bg="grey", width=800, height=300)
         self.dataframe.pack(side="bottom", fill="both", padx=2, pady=2)
         self.dataframe.pack_propagate(0)
-        self.dataframe2 = Frame(self.dataframe, bg="lightgrey", width=400, height=300, pady=2, padx=2)
+        self.dataframe2 = Frame(self.dataframe, bg="lightgrey", width=400, height=150, pady=2, padx=2)
         self.dataframe2.pack(side="bottom", fill="both", padx=2, pady=2, expand=False)
+        
 
         # make our canvases to hold unicode and hex text boxes
         self.hex_rows = Canvas(self.dataframe2, bg="white", relief="flat")
         self.hex_rows.grid(row=0, column=0, sticky="news", pady=2, padx=2, columnspan=1)
         self.unicode_rows = Canvas(self.dataframe2, bg="white", relief="flat")
-        self.unicode_rows.grid(row=0, column=1, sticky="news", pady=2, padx=2)
+        self.unicode_rows.grid(row=0, column=2, sticky="news", pady=2, padx=2)
 
         # make our header labels for description
         self.h_hex = Label(self.hex_rows, bg="white", cursor="dot", text="Hex", font=("roboto", 12), 
@@ -131,13 +145,20 @@ class DataFrame(Frame):
         self.h_unic.grid(column=0, row=0, columnspan=1)
 
         # make our text boxes to hold the actual data
-        self.hex_text = Text(self.hex_rows, bg="white", relief="flat", padx=2, width=80)
-        self.unicode_text = Text(self.unicode_rows, bg="white", relief="flat", pady=2, padx=2, width=78)
+        self.hex_text = Text(self.hex_rows, bg="white", relief="flat", padx=2, width=80, height=16)
+        self.unicode_text = Text(self.unicode_rows, bg="white", relief="flat", pady=2, padx=2, width=78, height=16)
         self.hex_text.grid(row=1, column=0, sticky="news", pady=2, padx=2, columnspan=1)
         self.unicode_text.grid(row=1, column=0, sticky="news", pady=2, padx=2, columnspan=1)
         self.hex_text.grid_propagate(0)
         self.unicode_text.grid_propagate(0)
-    
+
+        # make our scrollbar for textboxes
+        self.hex_vsb = Scrollbar(self.dataframe2, orient="vertical", command=self.hex_text.yview, bd=0, bg="white", activebackground="white", highlightcolor="white")
+        self.unic_vsb = Scrollbar(self.dataframe2, orient="vertical", command=self.unicode_text.yview, bd=0, bg="white", activebackground="white", highlightcolor="white")
+        self.hex_vsb.grid(row=0, column=1, sticky="news", pady=2, padx=2)
+        self.unic_vsb.grid(row=0, column=3, sticky="news", pady=2, padx=2)
+        self.hex_text.configure(yscrollcommand=self.hex_vsb.set)
+        self.unicode_text.configure(yscrollcommand=self.unic_vsb.set)
 
     def set_data(self, packet, packetid):
         # set text box editable and pack our data
@@ -197,7 +218,6 @@ class UserInterface(tk.Tk):
         self.packetframe.pack(side="left", fill="both", padx=2, pady=2, expand=True)
 
     def register_packet(self, packet):
-        self.statusbar.change_status("Status: Capturing Packets...")
         self.packetid += 1
         self.packetframe.add_row(packet, self.packetid)
         
