@@ -80,7 +80,7 @@ class TCPPacket(Packet):
         flag_rst = offset_reserved_flags & 4 >> 2
         flag_syn = offset_reserved_flags & 2 >> 1
         flag_fin = offset_reserved_flags & 1
-        return flag_urg, flag_ack, flag_psh, flag_rst, flag_syn, flag_fin
+        return " ".join(("URG:", str(flag_urg))), " ".join(("ACK:", str(flag_ack))), " ".join(("PSH:", str(flag_psh))), " ".join(("RST:", str(flag_rst))), " ".join(("SYN:", str(flag_syn))), " ".join(("FIN:", str(flag_fin)))
 
 class UDPPacket(Packet):
     def __init__(self, raw_data):

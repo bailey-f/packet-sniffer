@@ -7,11 +7,10 @@ from GUI import userinterface as ui
 class Application():
 
     def __init__(self):
-        # Create UI
+        # create UI
         self.ui = ui.UserInterface()
         self.capture = capture.Capture(apply=self.register_packet)
         self.ui.add_toolbar_command("Start capture", self._startCap)
-        self.ui.packetid=0
         self.ui.add_toolbar_command("Stop capture", self._stopCap)
         self.ui.render()
         
