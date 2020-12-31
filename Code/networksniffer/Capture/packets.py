@@ -10,6 +10,7 @@ class Packet():
         self.headerLen = self._getHeaderLen()
         self.protocol = self._getProtocol()
         self.offset = int(self.headerLen) * 4
+        self.ttl = self._getTTL()
         self.payload = None
 
     def _formatIP(self, ip):

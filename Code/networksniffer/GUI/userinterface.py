@@ -112,8 +112,9 @@ class PacketFrame(Frame):
 
         self.highlighted_row = packetid - 1
 
-        # actually load data
+        # load data into dataframe & tcpip stack graphic
         self.parent.dataframe.set_data(packet, packetid)
+        self.parent.headerframe.set_data(packet, packetid)
 
 class DataFrame(Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -139,10 +140,10 @@ class DataFrame(Frame):
         self.all_info_canvas.grid(row=0, column=4, sticky="news", pady=2, padx=2)
 
         # make our header labels for description
-        self.h_hex = Label(self.hex_rows, bg="white", cursor="dot", text="Hex", font=("roboto", 12), 
+        self.h_hex = Label(self.hex_rows, bg="white", cursor="dot", text="Payload Hex", font=("roboto", 12), 
             borderwidth=2, relief="flat")
         self.h_hex.grid(column=0, row=0, columnspan=1)
-        self.h_unic = Label(self.unicode_rows, bg="white", cursor="dot", text="Unicode", font=("roboto", 12), 
+        self.h_unic = Label(self.unicode_rows, bg="white", cursor="dot", text="Payload Unicode", font=("roboto", 12), 
             borderwidth=2, relief="flat")
         self.h_unic.grid(column=0, row=0, columnspan=1)
         self.h_allinfo = Label(self.all_info_canvas, bg="white", cursor="dot", text="All Information", font=("roboto", 12), 
@@ -278,7 +279,7 @@ class ControlFrame(tk.Frame):
         self.app_layer_header = Label(self.filter_subframe1, bg="lightgrey", cursor="dot", 
             text="Application Layer", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center")
         self.net_layer_header = Label(self.filter_subframe2, bg="lightgrey", cursor="dot", 
-            text="Network Layer", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center")
+            text="Transport Layer", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center")
         self.app_layer_header.pack(side="top", padx=2, pady=2)
         self.net_layer_header.pack(side="top", padx=2, pady=2)
 
@@ -363,19 +364,98 @@ class HeaderFrame(tk.Frame):
         self.parent = parent
         
         # make outer and inner frame
-        self.cpframe_outer = Frame(self, bg="grey")
-        self.cpframe_outer.pack(side="left", fill="both", padx=2, pady=2)
-        self.cpframe_inner = Frame(self.cpframe_outer, bg="lightgrey", pady=2, padx=2, height=668, width=856, bd=0)
-        self.cpframe_inner.grid(row=0, column=0, pady=2, padx=2)
-        self.cpframe_outer.pack_propagate(0)
-        self.cpframe_inner.grid_propagate(0)
+        self.headersframe_outer = Frame(self, bg="grey")
+        self.headersframe_outer.pack(side="left", fill="both", padx=2, pady=2)
+        self.headersframe_inner = Frame(self.headersframe_outer, bg="lightgrey", pady=2, padx=2, height=668, width=856, bd=0)
+        self.headersframe_inner.grid(row=0, column=0, pady=2, padx=2)
+        self.headersframe_outer.pack_propagate(0)
+        self.headersframe_inner.grid_propagate(0)
 
         # make the canvas to hold our widgets
-        self.cp_widget_canvas = Canvas(self.cpframe_inner, bg="lightgrey",relief="flat", height=655, width=843, bd=0)
-        self.cp_widget_canvas.grid(row=0, column=0, pady=2, padx=2, sticky="ew")
-        self.cp_widget_canvas.grid_propagate(0)
-        self.cp_widget_canvas.update_idletasks()
+        self.headers_widget_canvas = Canvas(self.headersframe_inner, bg="lightgrey",relief="flat", height=655, width=843, bd=0)
+        self.headers_widget_canvas.grid(row=0, column=0, pady=2, padx=2, sticky="ew")
+        self.headers_widget_canvas.grid_propagate(0)
+        self.headers_widget_canvas.update_idletasks()
 
+        # make label about what this is
+        #self.overall_label = Label(self.headers_widget_canvas, bg="lightblue", cursor="dot", 
+            #text="Packet Decomposition", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center", height=6, width=10)
+        #self.overall_label.pack(side="left", anchor="n", padx=2, pady=2)
+
+        # make 3 frames to hold network / transport / application headers
+        self.network_frame1 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
+        self.transport_frame1 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
+        self.application_frame1 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
+        self.network_frame1.pack(side="bottom", pady=2, padx=2, anchor="e")
+        self.transport_frame1.pack(side="bottom", pady=2, padx=2, anchor="e")
+        self.application_frame1.pack(side="bottom", pady=2, padx=2, anchor="e")
+        self.network_frame2 = Frame(self.network_frame1, bg="lightpink", pady=2, padx=2, height=208, width=838, bd=0)
+        self.transport_frame2 = Frame(self.transport_frame1, bg="lightgreen", pady=2, padx=2, height=208, width=500, bd=0)
+        self.application_frame2 = Frame(self.application_frame1, bg="lightblue", pady=2, padx=2, height=208, width=230, bd=0)
+        self.network_frame2.pack(side="right", pady=2, padx=2)
+        self.transport_frame2.pack(side="right", pady=2, padx=2)
+        self.application_frame2.pack(side="right", pady=2, padx=2)
+        self.network_frame3 = Frame(self.network_frame2, bg="violet red", pady=2, padx=2, height=200, width=500, bd=0)
+        self.transport_frame3 = Frame(self.transport_frame2, bg="green", pady=2, padx=2, height=200, width=230, bd=0)
+        self.application_frame3 = Frame(self.application_frame2, bg="blue", pady=2, padx=2, height=200, width=230, bd=0)
+        self.network_frame3.pack(side="right", pady=2, padx=2)
+        self.transport_frame3.pack(side="right", pady=2, padx=2)
+        self.application_frame3.pack(side="right", pady=2, padx=2)
+        self.network_frame3.pack_propagate(0)
+        self.application_frame3.pack_propagate(0)
+        self.transport_frame3.pack_propagate(0)
+        self.network_frame2.pack_propagate(0)
+        self.application_frame2.pack_propagate(0)
+        self.transport_frame2.pack_propagate(0)
+        self.network_frame4 = Frame(self.network_frame2, bg="violet red", pady=2, padx=2, height=200, width=250, bd=0)
+        self.transport_frame4 = Frame(self.transport_frame2, bg="green", pady=2, padx=2, height=200, width=20, bd=0)
+        self.network_frame4.pack(side="left", pady=2, padx=2)
+        self.transport_frame4.pack(side="left", pady=2, padx=2)
+
+        self.payload_label_app = Label(self.application_frame3, bg="lightblue", cursor="dot", 
+            text="Payload: ", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center", height=150, width=200)
+        self.payload_label_tra = Label(self.transport_frame3, bg="lightgreen", cursor="dot", 
+            text="Payload: ", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center", height=150, width=200)
+        self.payload_label_net = Label(self.network_frame3, bg="lightpink", cursor="dot", 
+            text="Payload: ", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center", height=150, width=450)
+        self.payload_label_app.pack(padx=2, pady=2, fill="both")
+        self.payload_label_tra.pack(padx=2, pady=2, fill="both")
+        self.payload_label_net.pack(padx=2, pady=2, fill="both")
+        self.header_label_tra = Label(self.transport_frame4, bg="lightgreen", cursor="dot", 
+            text="Header Data: ", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center", height=150, width=200, wraplength=240)
+        self.header_label_net = Label(self.network_frame4, bg="lightpink", cursor="dot", 
+            text="Header Data: ", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center", height=150, width=400, wraplength=300)
+        self.header_label_tra.pack(padx=2, pady=2, fill="both")
+        self.header_label_net.pack(padx=2, pady=2, fill="both")
+
+    def set_data(self, packet, packetid):
+        self.payload_label_app.configure(text=("Payoad: " + str(packet.len) + " bytes long"))
+        self.payload_label_net.configure(text=("Payoad: " + str(packet.len + packet.dOffset) + " bytes long"))
+        self.payload_label_tra.configure(text=("Payoad: " + str(packet.len) + " bytes long"))
+
+        #self.overall_label.configure(text=("Packet Decomposition of " + 
+        #    str(packet.protocol) + " packet " + str(packetid)))
+
+        self.header_label_net.configure(text=("Header Data: \n" + 
+            "Source IP: " + str(packet.sourceIP) + "\n" +
+            "Destination IP: " + str(packet.destIP) + "\n" +
+            "Version: " + str(packet.vers) + "\n" +
+            "Header Length: " + str(packet.headerLen) + "\n" +
+            "Protocol: " + str(packet.protocol) + "\n" +
+            "Time to Live: " + str(packet.ttl) + "\n"))
+        self.header_label_tra.configure(text=("Header Data: \n" + 
+            "Source Port: " + str(packet.srcPort) + "\n" +
+            "Destination Port: " + str(packet.destPort) + "\n" +
+            "Sequence Number: " + str(packet.seqNum) + "\n" +
+            "Header Length: " + str(packet.dOffset) + "\n"))
+        if(packet.protocol=="TCP"):
+            self.header_label_tra.configure(text=("Header Data: \n" + 
+            "Source Port: " + str(packet.srcPort) + "\n" +
+            "Destination Port: " + str(packet.destPort) + "\n" +
+            "Sequence Number: " + str(packet.seqNum) + "\n" +
+            "Header Length: " + str(packet.dOffset) + "\n" +
+            "Flags: " + str(packet.flags) + "\n"))
+        
 
 class UserInterface(tk.Tk):
     def __init__(self):
