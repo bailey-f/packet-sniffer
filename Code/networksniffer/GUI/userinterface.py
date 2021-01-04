@@ -56,7 +56,7 @@ class PacketFrame(Frame):
             text="Protocol", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_proto.grid(column=11, row=0, columnspan=1)
         self.h_len = Label(self.packetframe3, bg="white", cursor="dot", 
-            text="   Header Length   ", font=("roboto", 12), borderwidth=2, relief="flat")
+            text="   Packet Version  ", font=("roboto", 12), borderwidth=2, relief="flat")
         self.h_len.grid(column=12, row=0, columnspan=1)
         
     def add_row(self, packet, packetid):
@@ -83,9 +83,9 @@ class PacketFrame(Frame):
                 self.buttons[i].configure(text=str(packet.protocol))
                 self.buttons[i].grid(row=(self.packetcount+10), column=11, sticky="news")
             elif(self.headers[i]=="Header Length"):
-                self.buttons[i].configure(text=str(packet.headerLen), font=("roboto", 10), relief="flat")
+                self.buttons[i].configure(text=("IPV"+str(packet.vers)), font=("roboto", 10), relief="flat")
                 self.buttons[i].grid(row=(self.packetcount+10), column=12, sticky="news")
-            self.buttons[i].configure(activebackground="lightblue", highlightcolor="lightblue", background="white",
+            self.buttons[i].configure(activebackground="lightgreen", highlightcolor="lightblue", background="white",
                 borderwidth=0, command= lambda: self.on_click(packet, packetid))
             self.on_hover(self.buttons[i])
             self.buttonsinrow.append(self.buttons[i])
@@ -95,20 +95,29 @@ class PacketFrame(Frame):
         
     
     def on_hover(self, button):
-        button.bind("<Leave>", func=lambda e: button.config(background="white"))
-        button.bind("<Enter>", func=lambda e: button.config(background="lightblue"))
-    
+        if(button['bg']=="lightgreen"):
+            button['activebackground'] = "lightgreen"
+            button.bind("<Leave>", func=lambda e: button.config(background="lightgreen"))
+            button.bind("<Enter>", func=lambda e: button.config(background="lightblue"))
+        elif(button['bg']=="white"):
+            button['activebackground'] = "white"
+            button.bind("<Leave>", func=lambda e: button.config(background="white"))
+            button.bind("<Enter>", func=lambda e: button.config(background="lightblue"))
+
     def on_click(self, packet, packetid):
         specific_row = self.all_rows[packetid-1]
         old_row = self.all_rows[self.highlighted_row]
 
         # set current row highlighted
         for i in range(0, len(self.headers)):
-            specific_row[i].configure(state=ACTIVE)
+            specific_row[i].configure(bg="lightgreen")
+            self.on_hover(specific_row[i])
+
 
         # set old row not highlighted
         for i in range(0, len(self.headers)):
-            old_row[i].configure(state=NORMAL)
+            old_row[i].configure(bg="white")
+            self.on_hover(old_row[i])
 
         self.highlighted_row = packetid - 1
 
@@ -151,14 +160,14 @@ class DataFrame(Frame):
         self.h_allinfo.grid(column=0, row=0, columnspan=1)
 
         # make our text boxes to hold the actual data
-        self.hex_text = Text(self.hex_rows, bg="white", relief="flat", padx=2, width=80, height=16, selectbackground="lightblue")
-        self.unicode_text = Text(self.unicode_rows, bg="white", relief="flat", pady=2, padx=2, width=78, height=16, selectbackground="lightblue")
+        self.hex_text = Text(self.hex_rows, bg="white", relief="flat", padx=2, width=80, height=16, selectbackground="lightgreen")
+        self.unicode_text = Text(self.unicode_rows, bg="white", relief="flat", pady=2, padx=2, width=78, height=16, selectbackground="lightgreen")
         self.hex_text.grid(row=1, column=0, sticky="news", pady=2, padx=2, columnspan=1)
         self.unicode_text.grid(row=1, column=0, sticky="news", pady=2, padx=2, columnspan=1)
         self.hex_text.grid_propagate(0)
         self.unicode_text.grid_propagate(0)
 
-        self.all_info_text = Text(self.all_info_canvas, bg="white", relief="flat", padx=2, width=67, height=16, selectbackground="lightblue")
+        self.all_info_text = Text(self.all_info_canvas, bg="white", relief="flat", padx=2, width=67, height=16, selectbackground="lightgreen")
         self.all_info_text.grid(row=1, column=0, sticky="news", pady=2, padx=2, columnspan=1)
         self.all_info_text.grid_propagate(0)
 
@@ -249,8 +258,8 @@ class ControlFrame(tk.Frame):
         self.cp_widget_canvas.update_idletasks()
 
         # make our 2 frames
-        self.capture_frame = Frame(self.cp_widget_canvas, bg="white", relief="flat", height=327, width=502, bd=2)
-        self.filter_frame = Frame(self.cp_widget_canvas, bg="white", relief="flat", height=327, width=502, bd=2)
+        self.capture_frame = Frame(self.cp_widget_canvas, bg="lightgrey", relief="flat", height=327, width=502, bd=2)
+        self.filter_frame = Frame(self.cp_widget_canvas, bg="lightgrey", relief="flat", height=327, width=502, bd=2)
         self.capture_frame.pack(side="top", fill="both", padx=2, pady=2)
         self.capture_frame.pack_propagate(0)
         self.capture_frame.update_idletasks()
@@ -259,12 +268,12 @@ class ControlFrame(tk.Frame):
         self.filter_frame.update_idletasks()
 
         # pack our capture frame with relevant widgets & data
-        self.capture_header = Label(self.capture_frame, bg="white", cursor="dot", 
+        self.capture_header = Label(self.capture_frame, bg="lightgrey", cursor="dot", 
             text="Capture", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center")
         self.capture_header.pack(side="top", padx=2, pady=2)
 
         # pack our filter frame with relevant widgets & data
-        self.filter_header = Label(self.filter_frame, bg="white", cursor="dot", 
+        self.filter_header = Label(self.filter_frame, bg="lightgrey", cursor="dot", 
             text="Filter", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center")
         self.filter_header.pack(side="top", padx=2, pady=2)
 
@@ -346,16 +355,66 @@ class ControlFrame(tk.Frame):
         self.port_entry = Entry(self.filter_subframe1, text="Specific Port", font=("roboto", 10))
         self.port_entry.pack(side="right", padx=2, pady=2)
 
+        self.capture_subframe1 = Frame(self.capture_frame, bg="lightgrey", relief="flat", height=93, width=502, bd=2)
+        self.capture_subframe2 = Frame(self.capture_frame, bg="lightgrey", relief="flat", height=93, width=502, bd=2)
+        self.capture_subframe3 = Frame(self.capture_frame, bg="lightgrey", relief="flat", height=93, width=502, bd=2)
+        self.capture_subframe1.pack(side="top", fill="both", padx=2, pady=2)
+        self.capture_subframe2.pack(side="top", fill="both", padx=2, pady=2)
+        self.capture_subframe3.pack(side="top", fill="both", padx=2, pady=2)
+        self.capture_subframe1.pack_propagate(0)
+        self.capture_subframe2.pack_propagate(0)
+        self.capture_subframe3.pack_propagate(0)
+
+        # add spacing
+        self.capture_subframe1.grid_columnconfigure(1, minsize=25)
+        self.capture_subframe1.grid_columnconfigure(4, minsize=78)
+        self.capture_subframe1.grid_columnconfigure(6, minsize=78)
+        #command= lambda: self.on_click(self.stop_cap_button)
+        # make capture widgets
+        self.start_cap_label = Label(self.capture_subframe1, text="Start Capture", activebackground="lightblue", highlightcolor="lightblue", background="white",
+                borderwidth=2, 
+                font=("roboto", 12), padx=2, pady=2, anchor="center", bg="lightgrey")
+        self.start_cap_label.grid(row=0, column=2, padx=2, pady=2, sticky="news")
+        self.stop_cap_label = Label(self.capture_subframe1, text="Stop Capture", activebackground="lightblue", highlightcolor="lightblue", background="white",
+                borderwidth=2, 
+                font=("roboto", 12), padx=2, pady=2, anchor="center", bg="lightgrey")
+        self.stop_cap_label.grid(row=0, column=5, padx=2, pady=2, sticky="news")
+
+        self.startimg = PhotoImage(file="C:/Users/Bailey/Desktop/Project/Code/networksniffer/GUI/img/start.png")
+        self.stopimg = PhotoImage(file="C:/Users/Bailey/Desktop/Project/Code/networksniffer/GUI/img/stop.png")
+        self.start_cap_button = Button(self.capture_subframe1, image=self.startimg, activebackground="lightblue", highlightcolor="lightblue", background="white",
+                borderwidth=2, 
+                font=("roboto", 12), padx=2, pady=2, anchor="center")
+        self.start_cap_button.grid(row=0, column=3, padx=2, pady=2, sticky="news")
+        self.stop_cap_button = Button(self.capture_subframe1, image=self.stopimg, activebackground="lightblue", highlightcolor="lightblue", background="white",
+                borderwidth=2, 
+                font=("roboto", 12), padx=2, pady=2, anchor="center")
+        self.stop_cap_button.grid(row=0, column=6, padx=2, pady=2, sticky="news")
+
+    def set_button(self, name, func):
+        if(name=="Start Capture"):
+            self.start_cap_button.configure(command=func)
+        elif(name=="Stop Capture"):
+            self.stop_cap_button.configure(command=func)
 
     def on_hover(self, button):
-        button.bind("<Leave>", func=lambda e: button.config(background="white"))
-        button.bind("<Enter>", func=lambda e: button.config(background="lightblue"))
+        if(button['bg']=="lightgreen"):
+            button['activebackground'] = "lightgreen"
+            button.bind("<Leave>", func=lambda e: button.config(background="lightgreen"))
+            button.bind("<Enter>", func=lambda e: button.config(background="lightblue"))
+        elif(button['bg']=="white"):
+            button['activebackground'] = "white"
+            button.bind("<Leave>", func=lambda e: button.config(background="white"))
+            button.bind("<Enter>", func=lambda e: button.config(background="lightblue"))
 
     def on_click(self, button):
-        if(button['fg']!="green"):
-            button.configure(fg="green")
-        elif(button['fg']=="green"):
-            button.configure(fg="black")
+        self.on_hover(button)
+        if(button['activebackground']=="white"):
+            button.configure(bg="lightgreen")
+        elif(button['activebackground']=="lightgreen"):
+            button.configure(bg="white")
+        self.on_hover(button)
+        
         # actually load data
         
 class HeaderFrame(tk.Frame):
@@ -377,27 +436,32 @@ class HeaderFrame(tk.Frame):
         self.headers_widget_canvas.grid_propagate(0)
         self.headers_widget_canvas.update_idletasks()
 
-        # make label about what this is
-        #self.overall_label = Label(self.headers_widget_canvas, bg="lightblue", cursor="dot", 
-            #text="Packet Decomposition", font=("roboto", 12), borderwidth=2, relief="flat", anchor="center", height=6, width=10)
-        #self.overall_label.pack(side="left", anchor="n", padx=2, pady=2)
-
         # make 3 frames to hold network / transport / application headers
+        #self.network_frame0 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
+        #self.transport_frame0 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
+        #self.application_frame0 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
         self.network_frame1 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
         self.transport_frame1 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
         self.application_frame1 = Frame(self.headers_widget_canvas, bg="white", pady=2, padx=2, height=222, width=856, bd=0)
-        self.network_frame1.pack(side="bottom", pady=2, padx=2, anchor="e")
-        self.transport_frame1.pack(side="bottom", pady=2, padx=2, anchor="e")
-        self.application_frame1.pack(side="bottom", pady=2, padx=2, anchor="e")
-        self.network_frame2 = Frame(self.network_frame1, bg="lightpink", pady=2, padx=2, height=208, width=838, bd=0)
-        self.transport_frame2 = Frame(self.transport_frame1, bg="lightgreen", pady=2, padx=2, height=208, width=500, bd=0)
-        self.application_frame2 = Frame(self.application_frame1, bg="lightblue", pady=2, padx=2, height=208, width=230, bd=0)
-        self.network_frame2.pack(side="right", pady=2, padx=2)
-        self.transport_frame2.pack(side="right", pady=2, padx=2)
-        self.application_frame2.pack(side="right", pady=2, padx=2)
-        self.network_frame3 = Frame(self.network_frame2, bg="violet red", pady=2, padx=2, height=200, width=500, bd=0)
-        self.transport_frame3 = Frame(self.transport_frame2, bg="green", pady=2, padx=2, height=200, width=230, bd=0)
-        self.application_frame3 = Frame(self.application_frame2, bg="blue", pady=2, padx=2, height=200, width=230, bd=0)
+        self.network_frame1.grid(row=2, column=0, sticky="e")
+        self.transport_frame1.grid(row=1, column=0, sticky="e")
+        self.application_frame1.grid(row=0, column=0, sticky="e")
+
+        # make label about what this is
+        self.overall_label = Label(self.headers_widget_canvas, bg="lightgrey", cursor="dot", 
+            text="Packet Decomposition", font=("roboto", 12), borderwidth=2, relief="flat", anchor="nw", height=10, width=50, padx=2, pady=2)
+        self.overall_label.grid(row=0, column=0, sticky="w", padx=2, pady=2)
+        self.overall_label.grid_propagate(0)
+
+        self.network_frame2 = Frame(self.network_frame1, bg="lightpink", pady=2, padx=2, height=215, width=841, bd=0)
+        self.transport_frame2 = Frame(self.transport_frame1, bg="lightgreen", pady=2, padx=2, height=215, width=503, bd=0)
+        self.application_frame2 = Frame(self.application_frame1, bg="lightblue", pady=2, padx=2, height=215, width=233, bd=0)
+        self.network_frame2.grid(row=0, column=0, sticky="e")
+        self.transport_frame2.grid(row=0, column=0, sticky="e")
+        self.application_frame2.grid(row=0, column=0, sticky="e")
+        self.network_frame3 = Frame(self.network_frame2, bg="violet red", pady=2, padx=2, height=211, width=500, bd=0)
+        self.transport_frame3 = Frame(self.transport_frame2, bg="green", pady=2, padx=2, height=211, width=230, bd=0)
+        self.application_frame3 = Frame(self.application_frame2, bg="blue", pady=2, padx=2, height=211, width=230, bd=0)
         self.network_frame3.pack(side="right", pady=2, padx=2)
         self.transport_frame3.pack(side="right", pady=2, padx=2)
         self.application_frame3.pack(side="right", pady=2, padx=2)
@@ -407,8 +471,8 @@ class HeaderFrame(tk.Frame):
         self.network_frame2.pack_propagate(0)
         self.application_frame2.pack_propagate(0)
         self.transport_frame2.pack_propagate(0)
-        self.network_frame4 = Frame(self.network_frame2, bg="violet red", pady=2, padx=2, height=200, width=250, bd=0)
-        self.transport_frame4 = Frame(self.transport_frame2, bg="green", pady=2, padx=2, height=200, width=20, bd=0)
+        self.network_frame4 = Frame(self.network_frame2, bg="violet red", pady=2, padx=2, height=210, width=250, bd=0)
+        self.transport_frame4 = Frame(self.transport_frame2, bg="green", pady=2, padx=2, height=210, width=20, bd=0)
         self.network_frame4.pack(side="left", pady=2, padx=2)
         self.transport_frame4.pack(side="left", pady=2, padx=2)
 
@@ -429,12 +493,12 @@ class HeaderFrame(tk.Frame):
         self.header_label_net.pack(padx=2, pady=2, fill="both")
 
     def set_data(self, packet, packetid):
-        self.payload_label_app.configure(text=("Payoad: " + str(packet.len) + " bytes long"))
-        self.payload_label_net.configure(text=("Payoad: " + str(packet.len + packet.dOffset) + " bytes long"))
-        self.payload_label_tra.configure(text=("Payoad: " + str(packet.len) + " bytes long"))
+        self.payload_label_app.configure(text=("Payload: " + str(packet.len) + " bytes long"))
+        self.payload_label_net.configure(text=("Payload: " + str(packet.len + packet.dOffset) + " bytes long"))
+        self.payload_label_tra.configure(text=("Payload: " + str(packet.len) + " bytes long"))
 
-        #self.overall_label.configure(text=("Packet Decomposition of " + 
-        #    str(packet.protocol) + " packet " + str(packetid)))
+        self.overall_label.configure(text=("Packet Decomposition of " + 
+            str(packet.protocol) + " packet " + str(packetid)))
 
         self.header_label_net.configure(text=("Header Data: \n" + 
             "Source IP: " + str(packet.sourceIP) + "\n" +
@@ -461,6 +525,8 @@ class UserInterface(tk.Tk):
     def __init__(self):
         super().__init__(screenName="Packet Sniffer")
         self.geometry("1080x720")
+        self.iconphoto(False, 
+            tk.PhotoImage(file='C:/Users/Bailey/Desktop/Project/Code/networksniffer/GUI/img/package.png'))
         self.state('zoomed')
         self.title('Packet Sniffer')
         self.toolbar = ToolBar(self)
@@ -485,6 +551,9 @@ class UserInterface(tk.Tk):
         
     def add_toolbar_command(self, name, func):
         self.toolbar.add_command(name, func)
+
+    def add_button_command(self, name, func):
+        self.controlframe.set_button(name, func)
 
     def render(self):
         self.mainloop()
