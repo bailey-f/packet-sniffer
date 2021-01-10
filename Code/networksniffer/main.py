@@ -1,4 +1,5 @@
 import Capture.capture as capture
+import Epan.data as data
 import time
 import threading
 from GUI import userinterface as ui
@@ -9,24 +10,40 @@ class Application():
     def __init__(self):
         # create UI and any widgets that interact with capturing
         self.ui = ui.UserInterface()
+        self.data = data
+        self.allpackets = []
         self.capture = capture.Capture(apply=self.register_packet)
         self.ui.add_toolbar_command("Start Capture", self._startCap)
         self.ui.add_toolbar_command("Stop Capture", self._stopCap)
         self.ui.add_button_command("Start Capture", self._startCap)
         self.ui.add_button_command("Stop Capture", self._stopCap)
+        self.ui.add_toolbar_command("Save Captures", self._saveCap)
+        self.ui.add_toolbar_command("Load Captures", self._loadCap)
+        self.ui.add_button_command("Save Captures", self._saveCap)
+        self.ui.add_button_command("Load Captures", self._loadCap)
         self.ui.render()
-        
+
     def _startCap(self):
         self.capture.start()
-        self.ui.statusbar.change_status("Capturing packets...")
-   
+        self.ui.statusbar.changeStatus("Capturing packets...")
+
     def _stopCap(self):
         self.capture.stop()
-        self.ui.statusbar.change_status("Doing nothing...")
-    
+        self.ui.statusbar.changeStatus("Doing nothing...")
+
     def register_packet(self, packet):
+        self.currentpacket = packet
         self.ui.register_packet(packet)
+        self.allpackets = self.ui.packetframe.packets
         # do other shnizzle
+
+    def _saveCap(self):
+        self.data.Data(self.allpackets)
+        path = self.data.Data.createPath(self.data.Data)
+        self.ui.pop_message("File Saved", "File " + str(path) + " successfully created.")
+
+    def _loadCap(self):
+        self.data.Data(self.currentpacket)
 
 
 # Exec main if this python file is run directly
