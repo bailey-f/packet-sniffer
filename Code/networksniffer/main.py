@@ -38,9 +38,8 @@ class Application():
         # do other shnizzle
 
     def _saveCap(self):
-        self.data.Data(self.allpackets)
-        path = self.data.Data.createPath(self.data.Data)
-        self.ui.pop_message("File Saved", "File " + str(path) + " successfully created.")
+        self.ui.pop_message("File Saved", "File " + str(self.data.Data(
+            self.allpackets).createFile(self.allpackets)) + " successfully created.")
 
     def _loadCap(self):
         self.data.Data(self.currentpacket)
