@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+from tkinter import filedialog
 
 
 class NavBar(tk.Frame):
@@ -468,6 +469,10 @@ class ControlFrame(tk.Frame):
         self.clear_cap_button.grid(
             row=0, column=7, padx=2, pady=2, sticky="news")
         self.clear_cap_button.configure(command=lambda: self.clearPackets())
+    
+    def loadPackets(self):
+        filename = filedialog.askopenfile(mode="r")
+        return filename
 
     def clearPackets(self):
         i = 0

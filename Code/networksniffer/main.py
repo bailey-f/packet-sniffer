@@ -2,8 +2,9 @@ import Capture.capture as capture
 import Epan.data as data
 import time
 import threading
+import Capture.packets as packets
 from GUI import userinterface as ui
-
+import json
 
 class Application():
 
@@ -42,7 +43,11 @@ class Application():
             self.allpackets).createFile(self.allpackets)) + " successfully created.")
 
     def _loadCap(self):
-        self.data.Data(self.currentpacket)
+        print(bytes(self.currentpacket.raw_data))
+        fn = self.ui.controlframe.loadPackets()
+        data = self.data.Data(None).loadFile(fn)
+        for i in range(len(data)):
+            self.register_packet(data[i])
 
 
 # Exec main if this python file is run directly

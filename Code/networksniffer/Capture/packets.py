@@ -10,6 +10,7 @@ class PacketEncoder(json.JSONEncoder):
 class Packet():
     def __init__(self, raw_data):
         self.raw_data = raw_data
+        self.decdata = self._getDecData()
         self.sourceIP = self._getSourceIP()
         self.destIP = self._getDestIP()
         self.vers = self._getVers()
@@ -21,14 +22,36 @@ class Packet():
         self.payload = None
 
     def get_json(self):
-        return json.dumps(self, default=lambda o: str(o) if isinstance(o, bytes) else o.__dict__,
-                          sort_keys=True, indent=4)
+        return json.dumps(self.decdata)
+        #return json.dumps(self, default=lambda o: o.__dict__ if isinstance(o, bytes) else str(o),
+        #                  sort_keys=True, indent=4)
 
     def _formatIP(self, ip):
         temp = []
         for i in ip:
             temp.append(str(i))
         return '.'.join(temp)
+
+    def _getDecData(self):
+        data = []
+        n = 2
+        try:
+            for i in range(0, len(str(self.raw_data)), n):
+                byte = self.raw_data[i:i + n]
+                data.append(byte)
+            for i in range(0, len(data)):
+                try:
+                    if(data[i] == ""):
+                        data[i] = ".."
+                    else:
+                        data[i] = data[i].hex()
+                except:
+                    pass
+                    data[i] = ".."
+        except:
+            pass
+            data = ".."
+        return "".join(data)
 
     def _getSourceIP(self):
         sourceIP = (struct.unpack('! 4B', self.raw_data[12:16])[:4])
@@ -164,4 +187,5 @@ class Payload():
         except:
             pass
             data = ".."
-        return data
+        return "".join(data)
+
