@@ -6,6 +6,7 @@ import Capture.packets as packets
 from GUI import userinterface as ui
 import json
 
+
 class Application():
 
     def __init__(self):
@@ -43,7 +44,6 @@ class Application():
             self.allpackets).createFile(self.allpackets)) + " successfully created.")
 
     def _loadCap(self):
-        print(bytes(self.currentpacket.raw_data))
         fn = self.ui.controlframe.loadPackets()
         data = self.data.Data(None).loadFile(fn)
         for i in range(len(data)):

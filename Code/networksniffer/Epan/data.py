@@ -11,7 +11,7 @@ from binascii import unhexlify
 class Data():
     def __init__(self, packets):
         self.date = datetime.datetime.now().strftime('%d %b')
-    
+
     def createFile(self, packets):
         # make a path for the new folder
         self.date = datetime.datetime.now().strftime('%d %b')
@@ -27,7 +27,7 @@ class Data():
         self.n = len([name for name in os.listdir(self.path)])
         self.file_path = self.path + "/" + "Capture" + str(self.n) + ".json"
         # count number of files already in directory and therefore new file name
-        print(str(self.n+1) + " files already in directory")
+        print(str(self.n-1) + " files already in directory")
 
         # make a path for the new file
         print("file " + str(self.file_path) + " made")
@@ -45,16 +45,16 @@ class Data():
         for line in file:
             normalline = (self.get_normal(line))
             newPacket = packets.Packet(normalline)
-            if(newPacket.protocol=="TCP"):
+            if(newPacket.protocol == "TCP"):
                 data_list.append(packets.TCPPacket(normalline))
-            elif(newPacket.protocol=="UDP"):
+            elif(newPacket.protocol == "UDP"):
                 data_list.append(packets.UDPPacket(normalline))
             else:
                 print("Packet not initialised. ERROR")
         file.close()
         return data_list
 
-    #def loadFile(self):
+    # def loadFile(self):
     #    pass
     def get_normal(self, rdata):
         rdata = rdata[1:(len(rdata)-2)]
