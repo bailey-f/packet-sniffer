@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog
+from pathlib import Path
 
 
 class NavBar(tk.Frame):
@@ -154,7 +155,6 @@ class PacketFrame(Frame):
                                             borderwidth=0, command=lambda: self.onClick(packet, packetid))
                             self.onHover(self.buttons[i])
                             self.buttonsinrow.append(self.buttons[i])
-                        print(self.packetcount)
                         self.all_rows.append(self.buttonsinrow)
                         self.packetrows.update()
                         self.packetrows.configure(scrollregion=self.packetrows.bbox("all"))
@@ -484,7 +484,7 @@ class ControlFrame(tk.Frame):
         self.net_layer_header.pack(side="top", padx=2, pady=2)
 
         self.app_desc=Label(self.filter_subframe1, bg="lightgrey", cursor="dot",
-                              text="Filter on specific ports, e.g 80 (HTTP)", font=("roboto", 10), borderwidth=2, relief="flat", anchor="center")
+                              text="Filter on frequently used ports, e.g 80 (HTTP)", font=("roboto", 10), borderwidth=2, relief="flat", anchor="center")
         self.net_desc=Label(self.filter_subframe2, bg="lightgrey", cursor="dot",
                               text="Filter on common protocols, e.g TCP", font=("roboto", 10), borderwidth=2, relief="flat", anchor="center")
         self.app_desc.pack(side="top", padx=2, pady=2)
@@ -540,14 +540,14 @@ class ControlFrame(tk.Frame):
                                borderwidth=2, command=lambda: self.onClick(self.slp_butt), font=("roboto", 12), padx=2, pady=2)
         self.slp_butt.grid(row=2, column=2, padx=2, pady=2)
         self.onHover(self.slp_butt)
-
+        """
         self.port_entry_header=Label(self.filter_subframe1, bg="lightgrey", cursor="dot",
                                        text=" Specific Port:", font=("roboto", 10), borderwidth=2, relief="flat", anchor="e")
         self.port_entry_header.pack(side="left", padx=2, pady=2)
         self.port_entry=Entry(self.filter_subframe1,
                                 text="Specific Port", font=("roboto", 10))
         self.port_entry.pack(side="right", padx=2, pady=2)
-
+        """ 
         self.capture_subframe1=Frame(
             self.capture_frame, bg="lightgrey", relief="flat", height=93, width=502, bd=2)
         self.capture_subframe2=Frame(
@@ -582,10 +582,13 @@ class ControlFrame(tk.Frame):
         self.stop_cap_label.grid(
             row=0, column=5, padx=2, pady=2, sticky="news")
 
+        pathstartimg = Path(__file__).parent / "img/start.png"
+        pathstopimg = Path(__file__).parent / "img/stop.png"
+
         self.startimg=PhotoImage(
-            file="C:/Users/Bailey/Desktop/Project/Code/networksniffer/GUI/img/start.png")
+            file=str(pathstartimg))
         self.stopimg=PhotoImage(
-            file="C:/Users/Bailey/Desktop/Project/Code/networksniffer/GUI/img/stop.png")
+            file=str(pathstopimg))
         self.start_cap_button=Button(self.capture_subframe1, image=self.startimg, activebackground="lightblue", highlightcolor="lightblue", background="white",
                                        borderwidth=2,
                                        font=("roboto", 12), padx=2, pady=2, anchor="center")
@@ -618,7 +621,7 @@ class ControlFrame(tk.Frame):
         self.onHover(self.save_cap_button)
         self.onHover(self.start_cap_button)
         self.onHover(self.stop_cap_button)
-
+        """
         self.loadfilters_button=Button(self.filter_subframe3, text="Load Filters", activebackground="lightblue", highlightcolor="lightblue", background="white",
                                       borderwidth=2,
                                       font=("roboto", 12), padx=2, pady=2, anchor="center")
@@ -626,6 +629,55 @@ class ControlFrame(tk.Frame):
         self.loadfilters_button.configure(
             command=lambda: self.filter(self.filterlist))
         self.onHover(self.loadfilters_button)
+        """
+        self.capture_subframe3.grid_columnconfigure(1, minsize=85)
+        self.capture_subframe3.grid_columnconfigure(2, minsize=85)
+        self.capture_subframe3.grid_columnconfigure(4, minsize=85)
+        self.capture_subframe3.grid_columnconfigure(6, minsize=85)
+
+        self.serv_dem_butt = Button(self.capture_subframe3, text="Load Server Demo", activebackground="lightblue", highlightcolor="lightblue", background="white",
+                                      borderwidth=2,
+                                      font=("roboto", 12), padx=2, pady=2, anchor="center")
+        
+        self.serv_dem_butt.grid(
+            row=0, column=3, padx=2, pady=2, sticky="news")
+        self.onHover(self.serv_dem_butt)
+        self.dem_server_state = False
+    
+    def configure(self, buttonname, func):
+        if(buttonname == "server demo"):
+            self.serv_dem_butt.configure(command=func)
+        
+    def loadServerDemo(self):
+        if(self.dem_server_state==False):
+            #configure the rest of the main window, and enter top level
+            self.dem_server_state = True
+            self.clear_cap_button.invoke()
+            self.filter_frame.forget()
+            self.load_cap_button.configure(state="disabled")
+            self.serv_dem_butt.configure(text="Exit Server Demo")
+            self.server_win = tk.Toplevel(self.parent)
+            self.server_win.resizable(False, False)
+            #pack our new window with relevant data
+            self.app_proto_list.clear()
+            self.net_proto_list.clear()
+            self.app_proto_list.append(7789)
+            self.parent.packetid = 0
+
+        elif(self.dem_server_state==True):
+            #configure the rest of the main window, and exit top level
+            self.dem_server_state = False
+            self.filter_frame.pack(side="bottom", fill="both", padx=2, pady=2)
+            self.filter_frame.pack_propagate(0)
+            self.filter_frame.update_idletasks()
+            self.load_cap_button.configure(state="normal")
+            self.serv_dem_butt.configure(text="Load Server Demo")
+            self.start_cap_button.configure(state="normal")
+            self.server_win.destroy()
+            self.app_proto_list.clear()
+            self.net_proto_list.clear()
+            self.clear_cap_button.invoke()
+            self.parent.packetid = 0
 
     def filter(self, filterlist):
         self.clear_cap_button.invoke()

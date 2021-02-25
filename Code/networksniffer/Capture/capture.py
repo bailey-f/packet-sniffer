@@ -7,6 +7,7 @@ import threading
 class Capture():
 
     def __init__(self, host=socket.gethostbyname(socket.gethostname()), port=0, apply=None):
+        print(socket.gethostbyname(socket.gethostname()))
         self.host = host
         self.port = port
         self.apply = apply

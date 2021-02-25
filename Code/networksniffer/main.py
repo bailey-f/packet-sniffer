@@ -5,6 +5,8 @@ import threading
 import Capture.packets as packets
 from GUI import userinterface as ui
 import json
+from GUI import serverdemo as sd
+
 
 
 class Application():
@@ -15,6 +17,7 @@ class Application():
         self.data = data
         self.allpackets = []
         self.capture = capture.Capture(apply=self.register_packet)
+        self.sd = sd.userInterface()
         self.ui.add_toolbar_command("Start Capture", self._startCap)
         self.ui.add_toolbar_command("Stop Capture", self._stopCap)
         self.ui.add_button_command("Start Capture", self._startCap)
@@ -23,6 +26,7 @@ class Application():
         self.ui.add_toolbar_command("Load Captures", self._loadCap)
         self.ui.add_button_command("Save Captures", self._saveCap)
         self.ui.add_button_command("Load Captures", self._loadCap)
+        self.ui.controlframe.configure("server demo", self._loadDemo)
         self.ui.render()
 
     def _startCap(self):
@@ -49,6 +53,13 @@ class Application():
         for i in range(len(data)):
             self.register_packet(data[i])
 
+    def _loadDemo(self):
+        if(self.sd.running==True):
+            self.sd.server.running=False
+            self.ui.controlframe.loadServerDemo()
+        elif(self.sd.running!=True):
+            self.ui.controlframe.loadServerDemo()
+            self.sd.start(self)
 
 # Exec main if this python file is run directly
 if __name__ == "__main__":
