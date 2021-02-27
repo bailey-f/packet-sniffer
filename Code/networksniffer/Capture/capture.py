@@ -21,7 +21,7 @@ class Capture():
 
     def start(self):
         self.running = True
-        threading.Thread(target=self._loop).start()
+        threading.Thread(target=self._loop, daemon=True).start()
 
     def stop(self):
         self.running = False

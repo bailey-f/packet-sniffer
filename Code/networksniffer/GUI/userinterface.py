@@ -676,8 +676,9 @@ class ControlFrame(tk.Frame):
             self.server_win.destroy()
             self.app_proto_list.clear()
             self.net_proto_list.clear()
-            self.clear_cap_button.invoke()
             self.parent.packetid = 0
+            self.clear_cap_button.invoke()
+
 
     def filter(self, filterlist):
         self.clear_cap_button.invoke()
@@ -698,6 +699,8 @@ class ControlFrame(tk.Frame):
         self.parent.packetframe.all_rows=[]
         self.parent.packetframe.packets=[]
         self.parent.packetframe.packetcount=0
+        self.parent.packetid = 0
+
 
     def setButton(self, name, func):
         if(name == "Start Capture"):

@@ -55,11 +55,15 @@ class Application():
 
     def _loadDemo(self):
         if(self.sd.running==True):
-            self.sd.server.running=False
+            self.ui.controlframe.stop_cap_button.invoke()
             self.ui.controlframe.loadServerDemo()
+            self.sd.stop()
+            self.ui.statusbar.changeStatus("Doing nothing...")
         elif(self.sd.running!=True):
             self.ui.controlframe.loadServerDemo()
             self.sd.start(self)
+            self.ui.statusbar.changeStatus("Performing Server Demonstration...")
+        
 
 # Exec main if this python file is run directly
 if __name__ == "__main__":
