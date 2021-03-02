@@ -2,7 +2,7 @@ import Capture.capture as capture
 import Epan.data as data
 import time
 import threading
-import Capture.packets as packets
+from Epan import packets
 from GUI import userinterface as ui
 import json
 from GUI import serverdemo as sd

@@ -1,6 +1,6 @@
 import socket
 import struct
-from Capture import packets
+from Epan import packets
 import threading
 
 

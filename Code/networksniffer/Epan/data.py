@@ -3,7 +3,7 @@ import struct
 import threading
 import json
 import datetime
-import Capture.packets as packets
+from Epan import packets
 import os
 from binascii import unhexlify
 
