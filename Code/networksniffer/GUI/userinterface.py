@@ -943,8 +943,9 @@ class UserInterface(tk.Tk):
     def __init__(self):
         super().__init__(screenName="Deep Packet Analyser")
         self.geometry("1080x720")
+        pathiconimg = Path(__file__).parent / "img/package.png"
         self.iconphoto(False,
-                       tk.PhotoImage(file='C:/Users/Bailey/Desktop/Project/Code/networksniffer/GUI/img/package.png'))
+                       tk.PhotoImage(file=str(pathiconimg)))
         self.state('zoomed')
         self.title('Deep Packet Analyser')
         self.toolbar=ToolBar(self)

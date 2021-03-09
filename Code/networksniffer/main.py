@@ -58,6 +58,7 @@ class Application():
             self.ui.controlframe.stop_cap_button.invoke()
             self.ui.controlframe.loadServerDemo()
             self.sd.stop()
+            self.ui.packetid = 0
             self.ui.statusbar.changeStatus("Doing nothing...")
         elif(self.sd.running!=True):
             self.ui.controlframe.loadServerDemo()

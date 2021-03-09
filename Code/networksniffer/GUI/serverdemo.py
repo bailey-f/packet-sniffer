@@ -143,6 +143,7 @@ class Server():
         self.port = 7789
         self.running = False
         self.server_socket = socket.socket()
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(2)
         self.server_socket.settimeout(0)

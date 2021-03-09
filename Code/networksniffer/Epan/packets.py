@@ -23,8 +23,6 @@ class Packet():
 
     def get_json(self):
         return json.dumps(self.decdata)
-        #return json.dumps(self, default=lambda o: o.__dict__ if isinstance(o, bytes) else str(o),
-        #                  sort_keys=True, indent=4)
 
     def _formatIP(self, ip):
         temp = []
