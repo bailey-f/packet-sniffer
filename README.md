@@ -1,5 +1,5 @@
 
-Refer to https://docs.google.com/document/d/16_OHxL2CbzYkLaobdTo8bHbwhYXH-K2yrekPQhf_FWQ/edit?usp=sharing
+Refer to documentation page
 
 ```
                     +--------------+
@@ -24,5 +24,5 @@ Refer to https://docs.google.com/document/d/16_OHxL2CbzYkLaobdTo8bHbwhYXH-K2yrek
         |                          |
         +--------------------------+
 ```
-Fully developed by Bailey Findlay as project work for the Computer Science A-Level.
+Fully developed by Bailey F as project work for the Computer Science A-Level.
 Note to end user, execution requires elevated network priveledges, Windows Administrator is the designed intent.
